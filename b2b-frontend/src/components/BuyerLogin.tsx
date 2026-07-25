@@ -34,12 +34,26 @@ export default function BuyerLogin({
   // Lock scroll when modal is open
   useEffect(() => {
     if (isOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
       document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "unset";
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      }
     }
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -124,7 +138,7 @@ export default function BuyerLogin({
       {isOpen && (
         <div
           key="buyer-login-modal"
-          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 overflow-y-auto scrollbar-none"
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6"
         >
           {/* Backdrop */}
           <motion.div
@@ -132,7 +146,7 @@ export default function BuyerLogin({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm touch-none"
           />
 
           {/* Modal Content */}
@@ -140,7 +154,7 @@ export default function BuyerLogin({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-[440px] md:max-w-[480px] bg-white rounded-2xl sm:rounded-[32px] shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
+            className="relative w-full max-w-[400px] sm:max-w-[440px] md:max-w-[480px] bg-white rounded-2xl sm:rounded-[32px] shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)] overflow-hidden"
           >
             {/* Close Button */}
             <button
@@ -150,7 +164,7 @@ export default function BuyerLogin({
               <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             </button>
 
-            <div className="p-6 sm:p-10 overflow-y-auto scrollbar-none flex-1 max-h-[92vh]">
+            <div className="p-6 sm:p-10 flex-1 overflow-y-auto overscroll-contain">
               {/* Header Section */}
               <div className="mb-6 sm:mb-10">
                 <div>
@@ -195,7 +209,7 @@ export default function BuyerLogin({
                               e.target.value.replace(/\D/g, "").slice(0, 10),
                             )
                           }
-                          className="flex-1 bg-transparent border-none outline-none text-base sm:text-lg font-medium text-gray-900 pl-3 sm:pl-4 tracking-wider"
+                          className="flex-1 w-full min-w-0 bg-transparent border-none outline-none text-base sm:text-lg font-medium text-gray-900 pl-3 sm:pl-4 tracking-wider"
                           placeholder=""
                           maxLength={10}
                           autoFocus

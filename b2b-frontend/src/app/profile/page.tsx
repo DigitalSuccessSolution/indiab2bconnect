@@ -21,7 +21,6 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '' });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
     if (user && !isEditing) {
@@ -41,14 +40,23 @@ export default function ProfilePage() {
         body: JSON.stringify(formData)
       });
       await refreshUser();
-      setMessage({ type: 'success', text: 'Profile updated successfully.' });
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Profile updated successfully.',
+        confirmButtonColor: '#164e33'
+      });
       setIsEditing(false);
     } catch (error: any) {
       console.error('Failed to update profile', error);
-      setMessage({ type: 'error', text: error.message || 'Failed to update profile' });
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: error.message || 'Failed to update profile',
+        confirmButtonColor: '#ef530f'
+      });
     } finally {
       setSaving(false);
-      setTimeout(() => setMessage({ type: '', text: '' }), 5000);
     }
   };
 
@@ -82,14 +90,24 @@ export default function ProfilePage() {
         body: data
       });
 
-      setMessage({ type: 'success', text: 'Profile image updated.' });
+      Swal.fire({
+        icon: 'success',
+        title: 'Photo Uploaded',
+        text: 'Profile image updated successfully.',
+        confirmButtonColor: '#164e33',
+        timer: 3000
+      });
       await refreshUser();
     } catch (error: any) {
       console.error('Failed to upload image', error);
-      setMessage({ type: 'error', text: 'Failed to upload image.' });
+      Swal.fire({
+        icon: 'error',
+        title: 'Upload Failed',
+        text: 'Failed to upload image.',
+        confirmButtonColor: '#ef530f'
+      });
     } finally {
       setUploading(false);
-      setTimeout(() => setMessage({ type: '', text: '' }), 5000);
     }
   };
 
@@ -104,7 +122,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] pt-28 pb-20">
+    <div className="min-h-screen bg-white pt-28 pb-20">
       <div className="max-w-5xl mx-auto px-4">
 
         {/* Header Section */}
@@ -122,7 +140,7 @@ export default function ProfilePage() {
                 <Edit3 className="w-4 h-4" /> Edit Profile
               </button>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-3">
                 <button
                   onClick={() => setIsEditing(false)}
                   className="text-gray-600 font-semibold text-sm hover:text-gray-900"
@@ -141,41 +159,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <AnimatePresence>
-          {message.text && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className={`p-4 rounded-lg border mb-6 flex items-center gap-3 text-sm font-medium ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'
-                }`}
-            >
-              {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-              {message.text}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-          {/* Sidebar Navigation (Industry Standard Layout) */}
-          <div className="lg:col-span-3 space-y-2">
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-white border border-[#164e33] text-[#164e33] rounded-lg font-semibold text-sm text-left">
-              <UserCircle className="w-5 h-5" /> Profile Info
-            </button>
-
-            <div className="pt-4 border-t border-gray-200 mt-4">
-              <button 
-                onClick={handleLogout}
-                className="w-full mt-6 py-2.5 px-4 bg-white border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 hover:border-red-300 transition-all flex items-center justify-center gap-2"
-              >
-                <LogOut className="w-5 h-5" /> Logout
-              </button>
-            </div>
-          </div>
-
+        <div className="w-full">
           {/* Main Content Area */}
-          <div className="lg:col-span-9 space-y-6">
+          <div className="space-y-6">
 
             {/* Profile Information Card */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -276,6 +262,24 @@ export default function ProfilePage() {
                       </div>
 
                     </div>
+                    {/* Mobile Bottom Action Buttons */}
+                    {isEditing && (
+                      <div className="md:hidden pt-6 mt-4 flex justify-end gap-4 border-t border-gray-100 w-full">
+                        <button
+                          onClick={() => setIsEditing(false)}
+                          className="text-gray-600 font-semibold text-sm hover:text-gray-900 px-2"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSave}
+                          disabled={saving}
+                          className="inline-flex items-center gap-2 bg-[#164e33] text-white px-6 py-2.5 rounded-lg font-semibold text-[15px] hover:bg-[#0d3120] transition-colors shadow-sm disabled:opacity-50 flex-1 justify-center"
+                        >
+                          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Save Profile
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

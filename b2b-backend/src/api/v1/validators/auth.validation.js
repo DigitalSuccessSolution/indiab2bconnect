@@ -29,6 +29,7 @@ const authValidation = {
   requestEmailOTP: {
     body: Joi.object().keys({
       email: Joi.string().required().email(),
+      phone: Joi.string().optional().allow(""),
     }),
   },
   forgotPassword: {

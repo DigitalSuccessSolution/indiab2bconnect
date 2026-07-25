@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronRight, RotateCcw } from "lucide-react";
+import { ChevronRight, RotateCcw, Search, MapPin, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { slugify } from "@/lib/utils";
 import { useDispatch } from "react-redux";
@@ -26,8 +26,26 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   const title = categoryName || q || "Search Results";
 
   return (
-    <div className="bg-white border-b border-gray-100">
+    <div className="bg-white">
       <div className="max-w-[1800px] mx-auto px-4 lg:px-12 py-1.5">
+        {/* Mobile Search/Location Widget */}
+        <div 
+          className="md:hidden flex items-center h-[50px] border border-slate-300 rounded-[14px] bg-white pr-1.5 mb-2 mt-1 cursor-text"
+          onClick={() => window.dispatchEvent(new CustomEvent('openMobileSearch'))}
+        >
+          <div className="flex-grow h-full px-4 flex items-center">
+            <span className="text-[15px] font-medium text-slate-800 line-clamp-1">
+              {title === "Search Results" ? "Search products, categories..." : title}
+            </span>
+          </div>
+          <button 
+            type="button" 
+            className="h-[40px] w-[46px] bg-[#FF4F00] text-white rounded-[10px] flex items-center justify-center shrink-0 pointer-events-none"
+          >
+            <Search size={20} />
+          </button>
+        </div>
+
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-[11px] text-slate-500 mb-1 overflow-x-auto whitespace-nowrap pb-1 no-scrollbar">
           <Link href="/" className="hover:text-emerald-600 transition-colors">
@@ -47,7 +65,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           )}
           <span className="text-slate-900 font-medium truncate">{title}</span>
           <ChevronRight size={10} className="shrink-0 opacity-40" />
-          <span className="text-orange-600 font-medium">
+          <span className="text-orange-600 font-medium" suppressHydrationWarning>
             {listingsCount}+ Listings
           </span>
         </nav>
@@ -60,7 +78,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           <div className="flex items-center gap-3">
             <button
               onClick={() => dispatch(toggleDrawer(true))}
-              className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100 text-sm font-semibold hover:bg-emerald-100 transition-colors flex items-center gap-1.5"
+              className="px-3 py-1.5 text-slate-700 rounded-lg border border-slate-200 text-sm font-semibold hover:bg-slate-50 transition-colors flex items-center gap-1.5"
             >
               <RotateCcw className="rotate-90" size={16} />
               Filter

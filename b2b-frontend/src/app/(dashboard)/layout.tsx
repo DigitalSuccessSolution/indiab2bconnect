@@ -59,6 +59,8 @@ export default function DashboardLayout({
         
         if (pathname.startsWith("/b2b-india")) {
           router.push("/secure-login");
+        } else if (pathname.startsWith("/vendor")) {
+          router.push("/sell");
         } else {
           router.push("/login");
         }

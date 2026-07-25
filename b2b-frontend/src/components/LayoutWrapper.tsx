@@ -3,6 +3,7 @@
 import React, { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
+import MobileSearchDrawer from "./MobileSearchDrawer";
 import Footer from "./Footer";
 import BuyerLogin from "./BuyerLogin";
 import { useAuth } from "@/context/AuthContext";
@@ -57,6 +58,9 @@ export default function LayoutWrapper({
         fallback={<div className="h-16 bg-white shadow-sm animate-pulse" />}
       >
         <Navbar />
+      </React.Suspense>
+      <React.Suspense fallback={null}>
+        <MobileSearchDrawer />
       </React.Suspense>
       <main className="flex-1">
         <React.Suspense

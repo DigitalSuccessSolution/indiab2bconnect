@@ -347,10 +347,21 @@ exports.requestOTP = catchAsync(async (req, res, next) => {
 });
 
 exports.requestEmailOTP = catchAsync(async (req, res, next) => {
-  const { email } = req.body;
+  const { email, phone } = req.body;
   if (!email) return next(new AppError("Email address is required", 400));
 
   let user = await prisma.user.findUnique({ where: { email } });
+
+  if (user && user.password) {
+    return next(new AppError("Email is already registered. Please login.", 400));
+  }
+
+  if (phone) {
+    const phoneUser = await prisma.user.findFirst({ where: { phone } });
+    if (phoneUser && phoneUser.email !== email) {
+      return next(new AppError("Phone number is already registered.", 400));
+    }
+  }
   
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);

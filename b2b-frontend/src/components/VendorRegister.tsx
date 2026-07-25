@@ -39,85 +39,123 @@ export default function VendorRegister({
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [timer, setTimer] = useState(60);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Timer countdown effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (showOTPVerification && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [showOTPVerification, timer]);
+
   // Lock scroll when modal is open
   useEffect(() => {
     if (isOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
       document.body.style.overflow = "hidden";
+      document.body.style.overscrollBehavior = "contain";
     } else {
-      document.body.style.overflow = "unset";
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      document.body.style.overscrollBehavior = "";
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      }
     }
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      document.body.style.overscrollBehavior = "";
     };
   }, [isOpen]);
 
   if (!mounted) return null;
 
-  const handleSendOTP = async () => {
-    if (!formData.email) {
-      setError("Please enter your email address");
+  const validateForm = () => {
+    if (!formData.name.trim()) return "Please enter your name";
+    if (!/^\d{10}$/.test(formData.phone)) return "Phone number must be exactly 10 digits";
+    if (!formData.email.trim()) return "Please enter your email address";
+    if (formData.password.length < 6) return "Password must be at least 6 characters long";
+    if (formData.password !== formData.confirmPassword) return "Passwords do not match";
+    return null;
+  };
+
+  const handleInitialSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const errorMsg = validateForm();
+    if (errorMsg) {
+      setError(errorMsg);
       return;
     }
+
+    setLoading(true);
+    setError("");
+    try {
+      await apiFetch("/auth/request-email-otp", {
+        method: "POST",
+        body: JSON.stringify({ email: formData.email, phone: formData.phone }),
+      });
+      setOtpSent(true);
+      setTimer(60); // Start timer
+      setShowOTPVerification(true); // Switch to OTP screen
+    } catch (err: any) {
+      setError(err.message || "Failed to send verification code");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
     setOtpLoading(true);
     setError("");
     try {
       await apiFetch("/auth/request-email-otp", {
         method: "POST",
-        body: JSON.stringify({ email: formData.email }),
+        body: JSON.stringify({ email: formData.email, phone: formData.phone }),
       });
-      setOtpSent(true);
+      setTimer(60); // Reset timer on resend
     } catch (err: any) {
-      setError(err.message || "Failed to send verification code");
+      setError(err.message || "Failed to resend verification code");
     } finally {
       setOtpLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.otp || formData.otp.length < 4) {
+      setError("Please enter a valid verification code");
+      return;
+    }
+
     setLoading(true);
     setError("");
-
-    if (!formData.name.trim()) {
-      setError("Please enter your name");
-      setLoading(false);
-      return;
-    }
-
-    if (!/^\d{10}$/.test(formData.phone)) {
-      setError("Phone number must be exactly 10 digits");
-      setLoading(false);
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      setLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
-    }
-
-    if (!otpSent) {
-      setError("Please verify your email address first");
-      setLoading(false);
-      return;
-    }
 
     try {
       await apiFetch("/auth/register", {
@@ -129,7 +167,7 @@ export default function VendorRegister({
       });
       setSuccess(true);
     } catch (err: any) {
-      setError(err.message || "Registration failed");
+      setError(err.message || "Registration failed or Invalid OTP");
     } finally {
       setLoading(false);
     }
@@ -138,14 +176,14 @@ export default function VendorRegister({
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[10001] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto scrollbar-none">
+        <div className="fixed inset-0 z-[10001] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.08 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm touch-none"
           />
 
           <motion.div
@@ -153,7 +191,7 @@ export default function VendorRegister({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="relative w-full sm:max-w-[560px] bg-white rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden mt-auto sm:my-auto max-h-[95vh] sm:max-h-[92vh] flex flex-col"
+            className="relative w-full sm:max-w-[560px] bg-white rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden mt-auto sm:my-auto max-h-[100dvh] sm:max-h-[calc(100dvh-2rem)] flex flex-col"
           >
             <button
               onClick={onClose}
@@ -162,7 +200,7 @@ export default function VendorRegister({
               <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             </button>
 
-            <div className="p-6 pb-12 sm:p-10 overflow-y-auto scrollbar-none flex-1 max-h-[95vh] sm:max-h-[92vh]">
+            <div className="p-6 pb-12 sm:p-10 overflow-y-auto overscroll-contain scrollbar-none flex-1">
               <div className="mb-6 sm:mb-8">
                 <div>
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-900 leading-tight">
@@ -193,8 +231,87 @@ export default function VendorRegister({
                     Login Now
                   </button>
                 </div>
+              ) : showOTPVerification ? (
+                <form onSubmit={handleFinalSubmit} className="space-y-4 sm:space-y-5">
+                  <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Mail className="w-8 h-8 text-[#E64600]" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">Verify your email</h3>
+                    <p className="text-sm text-gray-500">
+                      We've sent a code to <span className="font-semibold text-gray-700">{formData.email}</span>
+                    </p>
+                  </div>
+
+                  {error && (
+                    <div className="p-3 bg-red-50 text-red-600 text-xs font-semibold rounded-xl border border-red-100 text-center">
+                      {error}
+                    </div>
+                  )}
+
+                  <div className="relative">
+                    <label className="absolute -top-2 left-4 bg-white px-2 text-[10px] sm:text-[11px] font-semibold text-[#E64600] z-10">
+                      Verification Code
+                    </label>
+                    <div className="flex gap-2">
+                      <div className="flex items-center h-[44px] sm:h-[48px] flex-1 border-2 border-gray-300 rounded-xl px-3 sm:px-4 focus-within:border-[#E64600] transition-all">
+                        <input
+                          type="text"
+                          value={formData.otp}
+                          onChange={(e) =>
+                            setFormData({ ...formData, otp: e.target.value.replace(/\D/g, "").slice(0, 6) })
+                          }
+                          className="flex-1 w-full min-w-0 bg-transparent border-none outline-none text-base sm:text-lg font-medium text-center text-gray-900 tracking-[0.5em]"
+                          placeholder="000000"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3 pt-2">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full h-[44px] sm:h-[48px] bg-[#E64600] text-white rounded-xl text-base sm:text-[17px] font-semibold hover:bg-[#e64600] disabled:bg-gray-400 transition-all flex items-center justify-center group shadow-md shadow-orange-500/20"
+                    >
+                      {loading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          Verify & Register
+                          <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        </>
+                      )}
+                    </button>
+                    
+                    <div className="flex items-center justify-between mt-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowOTPVerification(false);
+                          setFormData((prev) => ({ ...prev, otp: "" }));
+                        }}
+                        className="text-xs sm:text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors"
+                      >
+                        Change Email
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleResendOTP}
+                        disabled={otpLoading || timer > 0}
+                        className={`text-xs sm:text-sm font-semibold flex items-center transition-colors ${
+                          timer > 0 ? "text-gray-400 cursor-not-allowed" : "text-[#E64600] hover:text-[#c43b00]"
+                        }`}
+                      >
+                        {otpLoading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+                        {timer > 0 ? `Resend Code in 00:${timer.toString().padStart(2, '0')}` : "Resend Code"}
+                      </button>
+                    </div>
+                  </div>
+                </form>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+                <form onSubmit={handleInitialSubmit} className="space-y-4 sm:space-y-5">
                   {error && (
                     <div className="p-3 bg-red-50 text-red-600 text-xs font-semibold rounded-xl border border-red-100 text-center">
                       {error}
@@ -214,7 +331,7 @@ export default function VendorRegister({
                           onChange={(e) =>
                             setFormData({ ...formData, name: e.target.value })
                           }
-                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
+                          className="flex-1 w-full min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
                           placeholder="Your Name"
                           required
                         />
@@ -236,7 +353,7 @@ export default function VendorRegister({
                             setFormData({ ...formData, phone: val });
                           }}
                           maxLength={10}
-                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
+                          className="flex-1 w-full min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
                           placeholder="10-digit number"
                           required
                         />
@@ -248,143 +365,99 @@ export default function VendorRegister({
                     <label className="absolute -top-2 left-4 bg-white px-2 text-[10px] sm:text-[11px] font-semibold text-[#E64600] z-10">
                       Email
                     </label>
-                    <div className="flex gap-2">
-                      <div className="flex items-center h-[44px] sm:h-[48px] flex-1 border-2 border-gray-300 rounded-xl px-4 focus-within:border-[#E64600] transition-all">
-                        <Mail className="w-4 h-4 text-gray-400 mr-2.5 sm:mr-3 flex-shrink-0" />
-                        <input
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) =>
-                            setFormData({ ...formData, email: e.target.value })
-                          }
-                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
-                          placeholder="business@example.com"
-                          required
-                        />
-                      </div>
+                    <div className="flex items-center h-[44px] sm:h-[48px] border-2 border-gray-300 rounded-xl px-4 focus-within:border-[#E64600] transition-all">
+                      <Mail className="w-4 h-4 text-gray-400 mr-2.5 sm:mr-3 flex-shrink-0" />
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        className="flex-1 w-full min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
+                        placeholder="business@example.com"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <label className="absolute -top-2 left-4 bg-white px-2 text-[10px] sm:text-[11px] font-semibold text-[#E64600] z-10">
+                      Password
+                    </label>
+                    <div className="flex items-center h-[44px] sm:h-[48px] border-2 border-gray-300 rounded-xl px-4 focus-within:border-[#E64600] transition-all">
+                      <Lock className="w-4 h-4 text-gray-400 mr-2.5 sm:mr-3 flex-shrink-0" />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={formData.password}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
+                        className="flex-1 w-full min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
+                        placeholder="••••••••"
+                        required
+                      />
                       <button
                         type="button"
-                        onClick={handleSendOTP}
-                        disabled={otpLoading || otpSent}
-                        className="px-3 sm:px-4 h-[44px] sm:h-[48px] bg-[#E64600] hover:bg-[#e64600] cursor-pointer text-white rounded-xl text-xs sm:text-sm font-semibold disabled:bg-emerald-500 transition-all flex items-center justify-center whitespace-nowrap shrink-0 min-w-[70px] sm:min-w-[80px]"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="ml-2 text-gray-400 hover:text-gray-600 focus:outline-none"
                       >
-                        {otpLoading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : otpSent ? (
-                          "Sent"
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
                         ) : (
-                          "Verify"
+                          <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                         )}
                       </button>
                     </div>
                   </div>
 
-                  <AnimatePresence>
-                    {otpSent && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        className="relative"
+                  <div className="relative">
+                    <label className="absolute -top-2 left-4 bg-white px-2 text-[10px] sm:text-[11px] font-semibold text-[#E64600] z-10">
+                      Confirm
+                    </label>
+                    <div className="flex items-center h-[44px] sm:h-[48px] border-2 border-gray-300 rounded-xl px-4 focus-within:border-[#E64600] transition-all">
+                      <Lock className="w-4 h-4 text-gray-400 mr-2.5 sm:mr-3 flex-shrink-0" />
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={formData.confirmPassword}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            confirmPassword: e.target.value,
+                          })
+                        }
+                        className="flex-1 w-full min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
+                        placeholder="••••••••"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className="ml-2 text-gray-400 hover:text-gray-600 focus:outline-none"
                       >
-                        <label className="absolute -top-2 left-4 bg-white px-2 text-[10px] sm:text-[11px] font-semibold text-emerald-600 z-10">
-                          OTP Code
-                        </label>
-                        <div className="flex items-center h-[44px] sm:h-[48px] border-2 border-emerald-100 bg-emerald-50/10 rounded-xl px-4 focus-within:border-emerald-500 transition-all">
-                          <KeyRound className="w-4 h-4 text-emerald-500 mr-2.5 sm:mr-3 flex-shrink-0" />
-                          <input
-                            type="text"
-                            value={formData.otp}
-                            onChange={(e) =>
-                                setFormData({ ...formData, otp: e.target.value })
-                            }
-                            className="flex-1 bg-transparent border-none outline-none text-base sm:text-lg font-semibold text-gray-900 text-center tracking-[0.5em]"
-                            placeholder="000000"
-                            maxLength={6}
-                            required
-                          />
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <label className="absolute -top-2 left-4 bg-white px-2 text-[10px] sm:text-[11px] font-semibold text-[#E64600] z-10">
-                        Password
-                      </label>
-                      <div className="flex items-center h-[44px] sm:h-[48px] border-2 border-gray-300 rounded-xl px-4 focus-within:border-[#E64600] transition-all">
-                        <Lock className="w-4 h-4 text-gray-400 mr-2.5 sm:mr-3 flex-shrink-0" />
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          value={formData.password}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              password: e.target.value,
-                            })
-                          }
-                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
-                          placeholder="••••••••"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="p-1 sm:p-1.5 hover:bg-gray-50 rounded-lg transition-colors ml-1"
-                        >
-                          {showPassword ? (
-                            <EyeOff className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                          ) : (
-                            <Eye className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                    <div className="relative">
-                      <label className="absolute -top-2 left-4 bg-white px-2 text-[10px] sm:text-[11px] font-semibold text-[#E64600] z-10">
-                        Confirm
-                      </label>
-                      <div className="flex items-center h-[44px] sm:h-[48px] border-2 border-gray-300 rounded-xl px-4 focus-within:border-[#E64600] transition-all">
-                        <Lock className="w-4 h-4 text-gray-400 mr-2.5 sm:mr-3 flex-shrink-0" />
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          value={formData.confirmPassword}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              confirmPassword: e.target.value,
-                            })
-                          }
-                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm sm:text-[15px] font-medium text-gray-900"
-                          placeholder="••••••••"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="p-1 sm:p-1.5 hover:bg-gray-50 rounded-lg transition-colors ml-1"
-                        >
-                          {showPassword ? (
-                            <EyeOff className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                          ) : (
-                            <Eye className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                          )}
-                        </button>
-                      </div>
+                        {showConfirmPassword ? (
+                          <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                        ) : (
+                          <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+                        )}
+                      </button>
                     </div>
                   </div>
 
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-[44px] sm:h-[48px] bg-[#E64600] text-white rounded-xl text-lg sm:text-xl font-semibold hover:bg-[#e64600] transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 mt-2 cursor-pointer"
+                    className="w-full h-[44px] sm:h-[48px] bg-[#E64600] text-white rounded-xl text-base sm:text-[17px] font-semibold hover:bg-[#e64600] disabled:bg-gray-400 transition-all flex items-center justify-center mt-2 group shadow-md shadow-orange-500/20"
                   >
                     {loading ? (
-                      <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
+                      <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
-                      "Create Account"
+                      <>
+                        Create Account
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </>
                     )}
-                    {!loading && <ArrowRight className="w-4.5 h-4.5 sm:w-5 sm:h-5" />}
                   </button>
 
                   <div className="text-center pt-3 sm:pt-4 border-t border-gray-100">

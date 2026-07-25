@@ -14,7 +14,7 @@ const Hero = () => {
   const { city: reduxCity } = useSelector((state) => state.filter);
   const [searchQuery, setSearchQuery] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
-  
+
   // Sync locationQuery with auto-detected Redux city on load
   React.useEffect(() => {
     if (reduxCity && !locationQuery) {
@@ -30,7 +30,7 @@ const Hero = () => {
     if (!city && reduxCity) {
       city = reduxCity;
     }
-    
+
     if (type === "match") {
       router.push(
         `/post-requirement?q=${encodeURIComponent(query)}&city=${encodeURIComponent(city)}`,
@@ -43,30 +43,33 @@ const Hero = () => {
 
   return (
     <div className="bg-white font-sans text-[#1a1a1a]">
-      <section className="relative h-auto flex flex-col bg-[#f4f7f6] overflow-hidden pt-24 lg:pt-28 pb-12 lg:pb-16">
+      <section className="relative h-auto flex flex-col bg-[#f4f7f6] overflow-hidden pt-20 lg:pt-28 pb-12 lg:pb-16">
         {/* --- Background Images --- */}
-        <div className="absolute inset-0 z-0 overflow-hidden lg:block hidden">
-          <div className="absolute top-0 right-0 w-[60%] h-full">
+        <div className="absolute inset-0 z-0 overflow-hidden lg:block hidden bg-[#f4f7f6]">
+          <div className="absolute top-0 right-0 w-[55%] h-full">
             <img
               src="/Banner.png"
               alt="B2B Hero Background"
               className="w-full h-full object-cover object-right"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#f4f7f6] via-[#f4f7f6]/80 to-transparent"></div>
+            {/* Only fade the left edge to blend with the background color */}
+            <div className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-[#f4f7f6] to-transparent"></div>
           </div>
         </div>
 
-        <div className="lg:hidden absolute inset-0 z-0 overflow-hidden">
+        <div className="lg:hidden absolute inset-0 z-0 overflow-hidden bg-[#f4f7f6]">
           <img
             src="/Banner.png"
             alt="B2B Hero Background Mobile"
-            className="w-full h-full object-cover object-right opacity-20"
+            className="w-full h-full object-cover object-right opacity-60"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#f4f7f6]/95 via-[#f4f7f6]/70 to-[#f4f7f6]/95"></div>
+          {/* Top and bottom fade for text readability, middle is clear */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#f4f7f6] via-transparent to-transparent"></div>
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#f4f7f6] to-transparent"></div>
         </div>
 
         {/* Main Content Area */}
-        <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-8 w-full flex-1 flex flex-col justify-center py-6 lg:py-0">
+        <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-8 w-full flex-1 flex flex-col justify-center pt-6 pb-2 lg:py-0">
           <div className="flex flex-col justify-center lg:flex-1">
             <HeroContent
               onMatch={() => handleSearch("match")}

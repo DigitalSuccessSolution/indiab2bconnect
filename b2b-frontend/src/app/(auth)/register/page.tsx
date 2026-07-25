@@ -47,7 +47,7 @@ export default function VendorRegister() {
     try {
       await apiFetch("/auth/request-email-otp", {
         method: "POST",
-        body: JSON.stringify({ email: formData.email }),
+        body: JSON.stringify({ email: formData.email, phone: formData.phone }),
       });
       setOtpSent(true);
     } catch (err: any) {

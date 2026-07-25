@@ -63,48 +63,48 @@ export default function FindSuppliersPage() {
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans tracking-tight">
       {/* --- HERO SECTION --- */}
-      <section className="pt-24 md:pt-32 pb-16 bg-[#f8fafc] border-b border-gray-200 overflow-hidden relative">
-        <div className="max-w-[1600px] mx-auto px-4 md:px-8 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto">
+      <section className="pt-20 md:pt-32 pb-12 md:pb-16 bg-[#f8fafc] overflow-hidden relative">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center max-w-7xl mx-auto">
 
-            <div className="space-y-8 relative z-20">
+            <div className="space-y-6 md:space-y-8 relative z-20">
               <div>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight mb-4">
-                  Source from India's <br />
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900 leading-[1.15] mb-4 md:mb-6">
+                  Source from India's <br className="hidden sm:block" />
                   <span className="text-[#164e33]">Verified Manufacturers</span>
                 </h1>
-                <p className="text-lg text-slate-600 leading-relaxed max-w-lg">
+                <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-lg">
                   Discover millions of products from thousands of verified manufacturers, distributors, and wholesalers across 500+ cities.
                 </p>
               </div>
 
-              <form onSubmit={handleSearch} className="bg-white p-2 rounded-lg border border-gray-300 shadow-md flex flex-col md:flex-row gap-2 max-w-4xl">
+              <form onSubmit={handleSearch} className="bg-white p-2 md:p-2.5 rounded-xl border border-gray-200 shadow-lg flex flex-col md:flex-row gap-2 max-w-4xl">
 
                 {/* Product Search */}
-                <div className="flex-[3] flex items-center gap-3 px-3 py-2 border-b md:border-b-0 md:border-r border-gray-200 focus-within:bg-slate-50 transition-colors">
+                <div className="flex-[3] flex items-center gap-3 px-4 py-3 border-b md:border-b-0 md:border-r border-gray-200 focus-within:bg-slate-50 transition-colors rounded-t-lg md:rounded-l-lg md:rounded-tr-none">
                   <Search className="w-5 h-5 text-gray-400 shrink-0" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search products or categories..."
-                    className="bg-transparent outline-none w-full text-base text-gray-800 placeholder:text-gray-400"
+                    className="bg-transparent outline-none w-full text-base font-medium text-gray-800 placeholder:text-gray-400 placeholder:font-normal"
                   />
                 </div>
 
                 {/* Location Search */}
-                <div className="flex-[2] flex items-center gap-3 px-3 py-2 focus-within:bg-slate-50 transition-colors">
+                <div className="flex-[2] flex items-center gap-3 px-4 py-3 focus-within:bg-slate-50 transition-colors md:rounded-r-none">
                   <MapPin className="w-5 h-5 text-gray-400 shrink-0" />
                   <input
                     type="text"
                     value={locationQuery}
                     onChange={(e) => setLocationQuery(e.target.value)}
                     placeholder="Enter city..."
-                    className="bg-transparent outline-none w-full text-base text-gray-800 placeholder:text-gray-400"
+                    className="bg-transparent outline-none w-full text-base font-medium text-gray-800 placeholder:text-gray-400 placeholder:font-normal"
                   />
                 </div>
 
-                <button type="submit" className="px-8 py-3 bg-[#E64600] hover:bg-[#CC3E00] text-white rounded font-medium text-base transition-colors flex items-center justify-center shrink-0">
+                <button type="submit" className="w-full md:w-auto px-8 py-3.5 bg-[#E64600] hover:bg-[#CC3E00] text-white rounded-lg font-semibold text-base transition-colors flex items-center justify-center shrink-0 shadow-sm active:scale-95">
                   Search
                 </button>
               </form>
@@ -138,9 +138,9 @@ export default function FindSuppliersPage() {
       {/* --- FEATURED CATEGORIES --- */}
       <section className="py-16 bg-white relative">
         <div className="max-w-[1600px] mx-auto px-4 md:px-8">
-          <div className="text-center mb-10 max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Top Categories to Source</h2>
-            <p className="text-gray-600 text-base">Explore the most demanded categories in the Indian wholesale market.</p>
+          <div className="text-center mb-10 max-w-2xl mx-auto px-4">
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-slate-900 mb-3">Top Categories to Source</h2>
+            <p className="text-slate-600 text-base md:text-lg">Explore the most demanded categories in the Indian wholesale market.</p>
           </div>
           {categories.length > 0 && (
             <div className="overflow-hidden w-full relative pb-8">
@@ -180,11 +180,11 @@ export default function FindSuppliersPage() {
 
       {/* --- TOP SUPPLIERS --- */}
       {suppliers.length > 0 && (
-        <section className="py-16 bg-[#f8fafc] border-y border-gray-200 relative">
+        <section className="py-16 bg-[#f8fafc] relative">
           <div className="max-w-[1600px] mx-auto px-4 md:px-8">
-            <div className="text-center mb-10 max-w-2xl mx-auto">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Top Verified Suppliers</h2>
-              <p className="text-gray-600 text-base">Connect directly with India's most trusted manufacturers and distributors.</p>
+            <div className="text-center mb-10 max-w-2xl mx-auto px-4">
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-slate-900 mb-3">Top Verified Suppliers</h2>
+              <p className="text-slate-600 text-base md:text-lg">Connect directly with India's most trusted manufacturers and distributors.</p>
             </div>
 
             <div className="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -204,9 +204,9 @@ export default function FindSuppliersPage() {
                       )}
                     </div>
                     <div className="flex-1 overflow-hidden">
-                      <h4 className="font-semibold text-gray-900 transition-colors truncate text-base">{supplier.companyName || supplier.businessName || 'Verified Supplier'}</h4>
-                      <div className="flex items-center gap-1 mt-0.5 text-xs text-gray-500">
-                        <MapPin size={12} className="text-[#E64600] shrink-0" />
+                      <h4 className="font-semibold text-slate-900 transition-colors truncate text-base">{supplier.companyName || supplier.businessName || 'Verified Supplier'}</h4>
+                      <div className="flex items-center gap-1 mt-1 text-sm text-slate-500 font-medium">
+                        <MapPin size={14} className="text-[#E64600] shrink-0" />
                         <span className="truncate">{supplier.city || 'India'}</span>
                       </div>
                     </div>
@@ -234,18 +234,18 @@ export default function FindSuppliersPage() {
       )}
 
       {/* --- FINAL CTA --- */}
-      <section className="py-24 relative overflow-hidden bg-[#164e33] text-white">
+      <section className="py-16 md:py-24 relative overflow-hidden bg-[#164e33] text-white">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
         <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-8 text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
-              Looking for something specific? <br /> Let our experts find it for you.
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mb-4 md:mb-6 leading-tight">
+              Looking for something specific? <br className="hidden sm:block" /> Let our experts find it for you.
             </h2>
-            <p className="text-lg text-emerald-100/80 mb-10 leading-relaxed">
+            <p className="text-base sm:text-lg text-emerald-100/80 mb-8 md:mb-10 leading-relaxed">
               Post your requirement and get competitive quotes within 24 hours. Our sourcing team is here to help.
             </p>
-            <div className="flex justify-center">
-              <Link href="/post-requirement" className="px-8 py-3.5 bg-[#E64600] text-white rounded-lg font-medium hover:bg-[#CC3E00] transition-colors shadow-sm flex items-center justify-center gap-2">
+            <div className="flex justify-center px-4">
+              <Link href="/post-requirement" className="w-full sm:w-auto px-6 py-3 md:px-8 md:py-3.5 bg-[#E64600] text-white rounded-lg font-medium hover:bg-[#CC3E00] transition-colors shadow-sm flex items-center justify-center gap-2">
                 Post a Requirement <ArrowRight size={16} />
               </Link>
             </div>

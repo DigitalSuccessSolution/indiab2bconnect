@@ -41,12 +41,26 @@ export default function VendorLogin({
   // Lock scroll when modal is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      }
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -97,7 +111,7 @@ export default function VendorLogin({
   const modalContent = (
     <AnimatePresence>
       {isOpen && !isForgotPasswordOpen && !isRegisterOpen && (
-        <div key="vendor-login-main" className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto scrollbar-none">
+        <div key="vendor-login-main" className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center p-0 sm:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -105,7 +119,7 @@ export default function VendorLogin({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.08 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm touch-none"
           />
 
           {/* Modal Content */}
@@ -114,7 +128,7 @@ export default function VendorLogin({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="relative w-full sm:max-w-[480px] bg-white rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden mt-auto sm:my-auto max-h-[95vh] sm:max-h-[92vh] flex flex-col"
+            className="relative w-full sm:max-w-[480px] bg-white rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden mt-auto sm:my-auto max-h-[100dvh] sm:max-h-[calc(100dvh-2rem)] flex flex-col"
           >
             {/* Close Button */}
             <button
@@ -124,7 +138,7 @@ export default function VendorLogin({
               <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
             </button>
 
-            <div className="p-6 pb-12 sm:p-10 overflow-y-auto scrollbar-none flex-1 max-h-[95vh] sm:max-h-[92vh]">
+            <div className="p-6 pb-12 sm:p-10 overflow-y-auto overscroll-contain scrollbar-none flex-1">
               <div className="mb-6 sm:mb-10">
                 <div>
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-900 leading-tight">

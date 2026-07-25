@@ -54,11 +54,25 @@ export default function VendorLoginModal({
 
   useEffect(() => {
     if (isOpen && vendor) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
       document.body.style.overflow = "hidden";
     } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
       document.body.style.overflow = "";
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      }
     }
     return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
       document.body.style.overflow = "";
     };
   }, [isOpen, vendor]);
@@ -111,12 +125,13 @@ export default function VendorLoginModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-gray-900/70 backdrop-blur-sm font-sans">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 font-sans">
+      <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm touch-none" onClick={onClose} />
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="max-w-md md:max-w-4xl w-full max-h-[92vh] md:max-h-[90vh] overflow-y-auto md:overflow-hidden bg-white rounded-lg shadow-2xl flex flex-col md:flex-row border border-gray-100 relative scrollbar-none"
+        className="max-w-md md:max-w-4xl w-full max-h-[100dvh] sm:max-h-[calc(100dvh-2rem)] md:max-h-[90vh] overflow-hidden bg-white rounded-lg shadow-2xl flex flex-col md:flex-row border border-gray-100 relative"
       >
         {/* Close Button */}
         <button
@@ -127,7 +142,7 @@ export default function VendorLoginModal({
         </button>
 
         {/* Left Side: Business Info (Hidden on Mobile) */}
-        <div className="hidden md:block md:w-5/12 p-8 bg-white relative border-r border-gray-50">
+        <div className="hidden md:block md:w-5/12 p-8 bg-white relative border-r border-gray-50 overflow-y-auto overscroll-contain">
           {/* Top Badge */}
           <div className="inline-flex items-center gap-1 bg-[#006d3c] text-white px-3 py-1 rounded-lg text-sm font-semibold mb-6">
             <ShieldCheck size={16} />
@@ -219,7 +234,7 @@ export default function VendorLoginModal({
         </div>
 
         {/* Right Side: Form */}
-        <div className="w-full md:w-7/12 p-5 sm:p-8 md:p-10 bg-white flex flex-col justify-center max-h-[92vh] md:max-h-[90vh] overflow-y-auto scrollbar-none">
+        <div className="w-full md:w-7/12 p-5 sm:p-8 md:p-10 bg-white flex flex-col justify-center overflow-y-auto overscroll-contain scrollbar-none">
           <div className="mt-2 md:mt-0">
             <h2 className="text-2xl sm:text-[32px] md:text-[36px] font-semibold text-slate-900 leading-[1.1] mb-2 tracking-tight">
               Connect with this
@@ -257,7 +272,7 @@ export default function VendorLoginModal({
                         if (val.length <= 10) setPhone(val);
                       }}
                       placeholder="Enter your mobile number"
-                      className="w-full px-3 py-2 text-base focus:outline-none placeholder:text-gray-400 font-medium text-gray-800"
+                      className="w-full min-w-0 flex-1 px-3 py-2 text-base focus:outline-none placeholder:text-gray-400 font-medium text-gray-800"
                     />
                   </div>
 

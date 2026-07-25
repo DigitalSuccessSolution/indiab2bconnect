@@ -568,7 +568,7 @@ export function SearchPageContent({
   };
 
   return (
-    <div className="min-h-screen bg-[#fcfcfc] font-sans antialiased text-slate-900 pt-20">
+    <div className="min-h-screen bg-white font-sans antialiased text-slate-900 pt-20">
       <VendorLoginModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}

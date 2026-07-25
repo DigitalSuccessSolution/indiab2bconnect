@@ -279,7 +279,7 @@ const FeaturedServices = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fcfcfc] py-2 font-sans tracking-tight">
+    <div className="min-h-screen py-2 font-sans tracking-tight">
       <div className="max-w-[1600px] mx-auto px-4 md:px-8">
         <div className="flex flex-col gap-10 md:gap-14">
           {sections.map((section, index) => (

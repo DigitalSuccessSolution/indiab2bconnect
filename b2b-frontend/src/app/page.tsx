@@ -22,8 +22,8 @@ export default function Home() {
       <main>
         <Hero />
         <ServiceGrid />
-        <FeaturedServices />
         <CitySuppliers />
+        <FeaturedServices />
         <QuoteForm />
         <AboutSection />
       </main>

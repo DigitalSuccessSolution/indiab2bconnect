@@ -79,10 +79,10 @@ const defaultIcons = [
   { icon: Zap, color: "text-yellow-500", bg: "bg-yellow-50" },
 ];
 
-const ServiceGrid = () => {
+const ServiceGrid = ({ defaultShowAll = false }) => {
   const router = useRouter();
   const [categories, setCategories] = useState([]);
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(defaultShowAll);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -106,17 +106,17 @@ const ServiceGrid = () => {
   const displayedCategories = showAll ? categories : categories.slice(0, 15);
 
   return (
-    <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-2 bg-white font-sans tracking-tight mt-4">
+    <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-2 font-sans tracking-tight mt-4">
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 gap-8">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 sm:mb-12 gap-4 sm:gap-8">
         <div className="flex-1 max-w-3xl">
-          <h1 className="text-3xl sm:text-4xl lg:text-4xl font-bold text-slate-800 leading-tight">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 leading-tight tracking-tight">
             Explore Our{" "}
-            <span className="text-3xl sm:text-4xl lg:text-4xl font-bold text-[#134e4a]">
+            <span className="text-[#134e4a]">
               Marketplace
             </span>
           </h1>
-          <p className="text-gray-800 mt-4 text-lg sm:text-l font-medium leading-relaxed">
+          <p className="text-slate-600 mt-2 sm:mt-4 text-sm sm:text-lg font-medium leading-relaxed">
             Discover products and connect with verified vendors across diverse
             industries.
           </p>
@@ -124,7 +124,7 @@ const ServiceGrid = () => {
       </div>
 
       {/* Grid Section */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 sm:gap-4 md:gap-5 mb-20">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-8 gap-2.5 sm:gap-4 md:gap-5 mb-6 sm:mb-10">
         {displayedCategories.map((cat, index) => {
           const style = defaultIcons[index % defaultIcons.length];
           const IconComponent = style.icon;
@@ -132,21 +132,21 @@ const ServiceGrid = () => {
             <div
               key={cat.id}
               onClick={() => handleCategoryClick(cat.name)}
-              className="group border border-gray-100 rounded-lg p-3 sm:p-5 flex flex-col items-center justify-center text-center hover:-translate-y-1.5 hover:shadow-[0_12px_24px_-8px_rgba(16,185,129,0.15)] hover:border-emerald-200 cursor-pointer bg-white min-h-[120px] sm:min-h-[160px] relative overflow-hidden"
+              className="group border border-gray-100 rounded-lg p-2 sm:p-5 flex flex-col items-center justify-center text-center hover:-translate-y-1.5 hover:shadow-[0_12px_24px_-8px_rgba(16,185,129,0.15)] hover:border-emerald-200 cursor-pointer bg-white min-h-[100px] sm:min-h-[160px] relative overflow-hidden"
               style={{ transition: "all 400ms cubic-bezier(0.25, 1, 0.5, 1)" }}
             >
               {/* Bigger Icons */}
               <div
-                className={`p-3 sm:p-4 rounded-lg ${style.bg} mb-3 sm:mb-4 group-hover:scale-110 group-hover:shadow-sm relative z-10`}
+                className={`p-2.5 sm:p-4 rounded-lg ${style.bg} mb-2 sm:mb-3 group-hover:scale-110 group-hover:shadow-sm relative z-10`}
                 style={{ transition: "all 400ms cubic-bezier(0.25, 1, 0.5, 1)" }}
               >
                 <IconComponent
-                  className={`w-6 h-6 sm:w-8 sm:h-8 ${style.color}`}
+                  className={`w-5 h-5 sm:w-8 sm:h-8 ${style.color}`}
                   strokeWidth={1.8}
                 />
               </div>
               <h3 
-                className="text-[12px] sm:text-[14px] font-medium text-slate-800 leading-snug group-hover:text-emerald-900 relative z-10"
+                className="text-[11px] sm:text-[14px] font-medium text-slate-800 leading-tight group-hover:text-emerald-900 relative z-10 px-0.5"
                 style={{ transition: "all 300ms ease" }}
               >
                 {cat.name}
@@ -162,23 +162,23 @@ const ServiceGrid = () => {
         {!showAll && categories.length > 15 && (
           <div
             onClick={() => setShowAll(true)}
-            className="bg-[#134e4a] rounded-lg p-3 sm:p-5 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-[#0d3633] hover:-translate-y-1.5 hover:shadow-[0_12px_24px_-8px_rgba(19,78,74,0.4)] relative overflow-hidden group shadow-md min-h-[120px] sm:min-h-[160px]"
+            className="bg-[#134e4a] rounded-lg p-2 sm:p-5 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-[#0d3633] hover:-translate-y-1.5 hover:shadow-[0_12px_24px_-8px_rgba(19,78,74,0.4)] relative overflow-hidden group shadow-md min-h-[100px] sm:min-h-[160px]"
             style={{ transition: "all 400ms cubic-bezier(0.25, 1, 0.5, 1)" }}
           >
             <div 
-              className="p-3 sm:p-4 rounded-lg bg-white/10 mb-3 sm:mb-4 group-hover:scale-110 relative z-10"
+              className="p-2.5 sm:p-4 rounded-lg bg-white/10 mb-2 sm:mb-3 group-hover:scale-110 relative z-10"
               style={{ transition: "all 400ms cubic-bezier(0.25, 1, 0.5, 1)" }}
             >
-              <LayoutGrid className="text-white w-6 h-6 sm:w-8 sm:h-8" strokeWidth={1.8} />
+              <LayoutGrid className="text-white w-5 h-5 sm:w-8 sm:h-8" strokeWidth={1.8} />
             </div>
             <h3 
-              className="text-[12px] sm:text-[14px] font-medium text-white leading-snug relative z-10"
+              className="text-[11px] sm:text-[14px] font-medium text-white leading-tight relative z-10"
               style={{ transition: "all 300ms ease" }}
             >
               View All
             </h3>
             <p 
-              className="text-[10px] sm:text-[12px] text-white/70 mt-1 relative z-10"
+              className="text-[9px] sm:text-[12px] text-white/70 mt-1 relative z-10"
               style={{ transition: "all 300ms ease" }}
             >
               {categories.length > 0

@@ -30,12 +30,26 @@ export default function VendorForgotPassword({
   // Lock scroll when modal is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      }
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -67,14 +81,14 @@ export default function VendorForgotPassword({
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 overflow-y-auto no-scrollbar">
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.08 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm touch-none"
           />
 
           <motion.div
@@ -82,7 +96,7 @@ export default function VendorForgotPassword({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 4 }}
             transition={{ duration: 0.08, ease: "easeOut" }}
-            className="relative w-full max-w-[480px] bg-white rounded-[32px] shadow-2xl overflow-hidden my-auto"
+            className="relative w-full max-w-[480px] bg-white rounded-[32px] shadow-2xl overflow-hidden my-auto max-h-[100dvh] sm:max-h-[calc(100dvh-2rem)] flex flex-col"
           >
             <button
               onClick={onClose}
@@ -91,7 +105,7 @@ export default function VendorForgotPassword({
               <X className="w-5 h-5 text-gray-700" />
             </button>
 
-            <div className="p-10">
+            <div className="p-10 flex-1 overflow-y-auto overscroll-contain">
               <div className="mb-10">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 leading-tight">

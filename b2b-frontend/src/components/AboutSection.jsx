@@ -9,7 +9,7 @@ import FaqSection from "./FaqSection";
 
 const AboutSection = () => {
   return (
-    <div className="bg-white">
+    <div>
       {/* Top Section: Connect + Slider */}
       <section className="about-section py-10 md:py-20 border-b border-slate-50">
         <div className="container mx-auto px-6 md:px-12 lg:px-16">

@@ -102,9 +102,9 @@ const HeroSearchBar = ({
   };
 
   return (
-    <div className="bg-white p-1 rounded-lg border border-slate-200 shadow-sm flex flex-col md:flex-row gap-1 lg:max-w-2xl shrink-0 relative" ref={dropdownRef}>
-      <div className="flex-[1.5] flex items-center px-4 gap-2 bg-white rounded-lg border-b md:border-b-0 border-slate-100 pb-1 md:pb-0 relative">
-        <Search size={16} className="text-slate-400" />
+    <div className="bg-white p-1.5 md:p-1 rounded-xl md:rounded-lg border border-slate-200 shadow-sm flex flex-col md:flex-row gap-1 lg:max-w-2xl shrink-0 relative" ref={dropdownRef}>
+      <div className="flex-[1.5] flex items-center px-4 gap-2 bg-white rounded-lg border-b md:border-b-0 border-slate-100 pb-1.5 md:pb-0 relative">
+        <Search size={16} className="text-slate-400 shrink-0" />
         <input
           type="text"
           value={searchQuery}
@@ -114,7 +114,7 @@ const HeroSearchBar = ({
           }}
           onFocus={() => setIsDropdownOpen(true)}
           placeholder="Search products or services..."
-          className="w-full bg-transparent py-2.5 md:py-3 focus:outline-none text-[13px] font-medium text-slate-800 placeholder:text-slate-500"
+          className="w-full bg-transparent py-2.5 md:py-3 focus:outline-none text-[14px] md:text-[13px] font-medium text-slate-800 placeholder:text-slate-500"
         />
         
         {/* Autocomplete Dropdown */}
@@ -160,20 +160,20 @@ const HeroSearchBar = ({
 
       <div className="hidden md:block w-px h-6 bg-slate-100 self-center"></div>
 
-      <div className="flex-1 flex items-center px-4 gap-2 bg-white rounded-lg">
-        <MapPin size={16} className="text-slate-400" />
+      <div className="flex-1 flex items-center px-4 gap-2 bg-white rounded-lg pt-1.5 pb-2 md:py-0">
+        <MapPin size={16} className="text-slate-400 shrink-0" />
         <input
           type="text"
           value={locationQuery}
           onChange={(e) => setLocationQuery(e.target.value)}
           placeholder="Your City..."
-          className="w-full bg-transparent py-2.5 md:py-3 focus:outline-none text-[13px] font-medium text-slate-800 placeholder:text-slate-500"
+          className="w-full bg-transparent py-1.5 md:py-3 focus:outline-none text-[14px] md:text-[13px] font-medium text-slate-800 placeholder:text-slate-500"
         />
       </div>
 
       <button
         onClick={() => onSearch()}
-        className="bg-[#E64600] text-white px-6 py-2.5 rounded-lg md:rounded-[7px] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#CC3E00] transition-all cursor-pointer shadow-sm"
+        className="bg-[#E64600] text-white px-6 py-3.5 md:py-2.5 rounded-lg md:rounded-[7px] font-bold text-[15px] md:text-sm flex items-center justify-center gap-2 hover:bg-[#CC3E00] transition-all cursor-pointer shadow-sm w-full md:w-auto mt-1 md:mt-0"
       >
         <Sparkles size={16} /> Get Matched
       </button>

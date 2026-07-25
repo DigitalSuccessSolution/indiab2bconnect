@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 import LayoutWrapper from "@/components/LayoutWrapper";
 import GoogleAdsProvider from "@/components/GoogleAdsProvider";
 import ReduxProvider from "@/redux/ReduxProvider";
+import PromoPopup from "@/components/PromoPopup";
 
 export default function RootLayout({
   children,
@@ -35,6 +36,7 @@ export default function RootLayout({
             <LayoutWrapper>
               {children}
             </LayoutWrapper>
+            <PromoPopup />
           </AuthProvider>
         </ReduxProvider>
       </body>

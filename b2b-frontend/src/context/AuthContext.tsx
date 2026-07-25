@@ -94,10 +94,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error('Logout request failed:', err);
     }
 
+    const userRole = user?.role; // Save role before clearing
+
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
-    router.push('/');
+    
+    if (userRole === 'VENDOR') {
+      router.push('/sell');
+    } else {
+      router.push('/');
+    }
   };
 
   const refreshUser = async () => {

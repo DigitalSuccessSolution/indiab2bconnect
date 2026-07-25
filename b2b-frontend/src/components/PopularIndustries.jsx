@@ -37,7 +37,7 @@ const PopularIndustries = () => {
   }, []);
 
   return (
-    <div className="flex flex-nowrap lg:flex-wrap gap-3 sm:gap-4 mt-4 md:mt-6 overflow-x-auto pt-2 pb-4 px-1 -mx-1 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="flex flex-nowrap lg:flex-wrap gap-3 sm:gap-4 mt-4 md:mt-6 overflow-x-auto pt-2 pb-2 md:pb-4 px-1 -mx-1 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {industries.map((industry, index) => (
         <Link
           key={index}

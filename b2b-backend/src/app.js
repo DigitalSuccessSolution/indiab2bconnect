@@ -26,7 +26,23 @@ if (process.env.NODE_ENV === "development") {
 // 1. GLOBAL ACCESS
 app.use(
   cors({
-    origin: true,
+    origin: function (origin, callback) {
+      if (process.env.NODE_ENV === "production") {
+        // PRODUCTION: Restrict to actual live domains
+        const allowedOrigins = [
+          "https://indiab2bconnect.com",
+          "https://www.indiab2bconnect.com"
+        ];
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      } else {
+        // DEVELOPMENT: Allow all origins dynamically (crucial for local network testing)
+        callback(null, true);
+      }
+    },
     credentials: true,
   }),
 );

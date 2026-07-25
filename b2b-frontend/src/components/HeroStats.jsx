@@ -26,7 +26,7 @@ const useCountUp = (end, duration = 2000) => {
 
 const HeroStats = () => {
   return (
-    <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-8 w-full pb-4 mt-6 lg:mt-0 shrink-0 mb-3 lg:mb-4">
+    <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-8 w-full pb-4 mt-2 md:mt-6 lg:mt-0 shrink-0 mb-2 md:mb-3 lg:mb-4">
       <div className="bg-[#E64600] rounded-xl py-3 lg:py-4 px-4 lg:px-8 grid grid-cols-2 lg:flex lg:flex-nowrap items-center justify-between gap-4 lg:gap-6 shadow-2xl shadow-[#E64600]/20 border border-white/10">
         <StatBox icon={<Users size={22} className="text-white" />} targetNum={250000} suffix="+" label="Verified Vendors" />
         <div className="h-10 w-px bg-white/10 hidden lg:block"></div>

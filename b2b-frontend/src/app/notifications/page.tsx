@@ -107,7 +107,7 @@ export default function NotificationsPage() {
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] pt-28 pb-20">
+    <div className="min-h-screen bg-white pt-28 pb-20">
       <div className="max-w-4xl mx-auto px-4">
         
         {/* Header Section */}

@@ -14,9 +14,14 @@ import {
   ShoppingBag,
   ChevronDown,
   Building2,
-  Bell
+  Bell,
+  Info,
+  Phone,
+  ClipboardList,
+  Home
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Swal from "sweetalert2";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -29,10 +34,30 @@ import { apiFetch } from "@/lib/api";
 import { slugify, generateDiscoveryUrl } from "@/lib/utils";
 import BuyerLogin from "./BuyerLogin";
 import VendorLogin from "./VendorLogin";
+import BottomNav from "./BottomNav";
 
 const Navbar = () => {
   const router = useRouter();
   const { user, logout } = useAuth();
+  
+  const handleLogoutWithConfirm = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be logged out of your account.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#E64600',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Yes, logout'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleProfileDropdownClick();
+        logout();
+        setIsMobileMenuOpen(false);
+      }
+    });
+  };
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,6 +77,26 @@ const Navbar = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [forceCloseProfile, setForceCloseProfile] = useState(false);
+
+  const handleProfileDropdownClick = () => {
+    setForceCloseProfile(true);
+    setTimeout(() => setForceCloseProfile(false), 150);
+  };
+
+  // Disable body scroll when mobile menu is open to prevent background scrolling
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobileMenuOpen]);
+
+
 
   // Debounce the search query
   useEffect(() => {
@@ -210,12 +255,12 @@ const Navbar = () => {
         const formatted = data.map((item) => {
           const addr = item.address;
           const city =
-            addr.city || 
-            addr.town || 
-            addr.village || 
-            addr.city_district || 
-            addr.state_district || 
-            addr.state || 
+            addr.city ||
+            addr.town ||
+            addr.village ||
+            addr.city_district ||
+            addr.state_district ||
+            addr.state ||
             item.name;
 
           return city || "";
@@ -328,13 +373,13 @@ const Navbar = () => {
         );
       }
       loc = area ? `${area}, ${city}` : city;
-      
+
       // If the location is just 'india' or 'all india', keep the input clean
       const normalizedLoc = loc.toLowerCase().trim();
       if (normalizedLoc === "india" || normalizedLoc === "all india") {
         loc = "";
       }
-      
+
       setLocation(loc);
       dispatch(setReduxCity(loc));
     } else {
@@ -358,7 +403,7 @@ const Navbar = () => {
   useEffect(() => {
     const pCity = params?.city ? decodeURIComponent(params.city).toLowerCase() : "";
     const sCity = searchParams.get("city") ? searchParams.get("city").toLowerCase() : "";
-    
+
     const isDefaultLocation = !pCity && !sCity || pCity === "india" || pCity === "all india" || sCity === "india" || sCity === "all india";
 
     if (isDefaultLocation) {
@@ -381,7 +426,7 @@ const Navbar = () => {
                 data.address.village ||
                 data.address.city_district ||
                 data.address.state_district;
-                
+
               if (city) {
                 setLocation(city);
                 dispatch(setReduxCity(city));
@@ -449,7 +494,7 @@ const Navbar = () => {
 
       // If location input is empty, fallback to the auto-detected reduxCity
       const searchLocation = location || reduxCity;
-      
+
       let targetUrl;
       // Use SEO-friendly URL ONLY if it's an explicit category selection
       if (catId) {
@@ -462,19 +507,20 @@ const Navbar = () => {
         // For product/vendor names and free text, use standard search params
         targetUrl = `/search?q=${encodeURIComponent(query.trim())}&city=${encodeURIComponent(searchLocation)}`;
       }
-      
+
       router.push(targetUrl);
       setIsSearchDropdownOpen(false);
+      setIsMobileMenuOpen(false); // Close mobile navigation menu on search
     }
   };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/90 backdrop-blur-md shadow-sm py-2"
-          : "bg-white py-4"
-      }`}
+    <>
+      <nav
+      className={`absolute md:fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        ? "bg-white/90 backdrop-blur-md shadow-sm py-2"
+        : "bg-white py-4"
+        }`}
     >
       <div className="max-w-[1440px] mx-auto px-4 md:px-6 flex items-center justify-between gap-4">
         {/* Logo */}
@@ -710,19 +756,19 @@ const Navbar = () => {
                             <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest block mb-3">
                               Trending Searches
                             </span>
-                          <div className="flex flex-wrap gap-2">
-                            {trendingSearches.map((item, i) => (
-                              <button
-                                key={`trend-${i}`}
-                                type="button"
-                                onClick={() => handleSearch(null, item)}
-                                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-[13px] text-slate-600 hover:border-[#FF4F00] hover:text-[#FF4F00] transition-all"
-                              >
-                                {item}
-                              </button>
-                            ))}
+                            <div className="flex flex-wrap gap-2">
+                              {trendingSearches.map((item, i) => (
+                                <button
+                                  key={`trend-${i}`}
+                                  type="button"
+                                  onClick={() => handleSearch(null, item)}
+                                  className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-[13px] text-slate-600 hover:border-[#FF4F00] hover:text-[#FF4F00] transition-all"
+                                >
+                                  {item}
+                                </button>
+                              ))}
+                            </div>
                           </div>
-                        </div>
                         )}
 
                         {/* Categories / Autocomplete Section */}
@@ -747,25 +793,25 @@ const Navbar = () => {
                               suggestions.map((itemName, i) => {
                                 const matchIndex = itemName.toLowerCase().indexOf(searchQuery.trim().toLowerCase());
                                 return (
-                                <button
-                                  key={`sugg-${i}`}
-                                  type="button"
-                                  onClick={() => handleSearch(null, itemName, null)}
-                                  className="w-full text-left transition-all flex items-center group px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0 gap-3"
-                                >
-                                  <Search className="w-4 h-4 text-slate-400 shrink-0" />
-                                  {matchIndex !== -1 ? (
-                                    <span className="text-[14px] text-slate-700 truncate">
-                                      {itemName.substring(0, matchIndex)}
-                                      <span className="text-[#1a1a1a] font-semibold">
-                                        {itemName.substring(matchIndex, matchIndex + searchQuery.trim().length)}
+                                  <button
+                                    key={`sugg-${i}`}
+                                    type="button"
+                                    onClick={() => handleSearch(null, itemName, null)}
+                                    className="w-full text-left transition-all flex items-center group px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0 gap-3"
+                                  >
+                                    <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                                    {matchIndex !== -1 ? (
+                                      <span className="text-[14px] text-slate-700 truncate">
+                                        {itemName.substring(0, matchIndex)}
+                                        <span className="text-[#1a1a1a] font-semibold">
+                                          {itemName.substring(matchIndex, matchIndex + searchQuery.trim().length)}
+                                        </span>
+                                        {itemName.substring(matchIndex + searchQuery.trim().length)}
                                       </span>
-                                      {itemName.substring(matchIndex + searchQuery.trim().length)}
-                                    </span>
-                                  ) : (
-                                    <span className="truncate">{itemName}</span>
-                                  )}
-                                </button>
+                                    ) : (
+                                      <span className="truncate">{itemName}</span>
+                                    )}
+                                  </button>
                                 )
                               })
                             ) : !searchQuery.trim() ? (
@@ -781,10 +827,10 @@ const Navbar = () => {
                                 </button>
                               ))
                             ) : (
-                                <div className="px-4 py-8 text-center flex flex-col items-center">
-                                  <Search className="w-8 h-8 text-slate-300 mb-2" />
-                                  <p className="text-[14px] text-slate-600">No results found for "<span className="font-semibold text-slate-800">{searchQuery}</span>"</p>
-                                </div>
+                              <div className="px-4 py-8 text-center flex flex-col items-center">
+                                <Search className="w-8 h-8 text-slate-300 mb-2" />
+                                <p className="text-[14px] text-slate-600">No results found for "<span className="font-semibold text-slate-800">{searchQuery}</span>"</p>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -800,6 +846,13 @@ const Navbar = () => {
         {/* Right Actions */}
         <div className="flex items-center gap-2 md:gap-4">
           <Link
+            href="/post-requirement"
+            className="hidden lg:flex items-center gap-1.5 text-sm font-semibold text-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-all border border-slate-200 whitespace-nowrap"
+          >
+            <ClipboardList className="w-4 h-4 text-[#164e33]" />
+            Enquiry
+          </Link>
+          <Link
             href="/sell"
             className="hidden lg:flex items-center gap-2 text-sm font-semibold text-slate-700 px-5 py-2.5 rounded-xl hover:bg-slate-50 transition-all border border-slate-200"
           >
@@ -809,7 +862,7 @@ const Navbar = () => {
 
           {!user ? (
             <>
-               <button
+              <button
                 onClick={() => setIsBuyerDrawerOpen(true)}
                 className="hidden sm:block text-sm font-semibold text-white bg-[#164e33] px-6 py-2.5 rounded-xl hover:bg-[#113a26] transition-all"
               >
@@ -818,13 +871,16 @@ const Navbar = () => {
             </>
           ) : (
             <div className="relative group">
-              <button className="flex items-center gap-2 bg-slate-100 p-1.5 pr-3 rounded-full hover:bg-slate-200 transition-all">
-                <div className="w-8 h-8 bg-[#164e33] rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-inner overflow-hidden">
+              <button
+                onClick={() => router.push('/profile')}
+                className="flex items-center gap-2 lg:bg-slate-100 p-0 lg:p-1.5 lg:pr-3 rounded-full hover:bg-slate-200 lg:hover:bg-slate-200 transition-all shrink-0 max-w-[140px] sm:max-w-none"
+              >
+                <div className="w-8 h-8 shrink-0 bg-[#164e33] rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-inner overflow-hidden border border-slate-200">
                   {user.avatar ? (
-                    <img 
-                      src={user.avatar} 
-                      alt={user.name || "User"} 
-                      className="w-full h-full object-cover"
+                    <img
+                      src={user.avatar}
+                      alt={user.name || "User"}
+                      className="w-full h-full object-contain bg-white"
                       onError={(e) => {
                         e.target.style.display = 'none';
                         e.target.parentElement.innerText = user.name ? user.name.charAt(0) : "G";
@@ -837,359 +893,220 @@ const Navbar = () => {
                 <span className="text-sm font-semibold text-slate-700 hidden lg:block">
                   {user.name && user.name !== user.phone ? user.name : "Guest User"}
                 </span>
-                <ChevronDown className="w-4 h-4 text-slate-500 transition-transform group-hover:rotate-180" />
+                <ChevronDown className="w-4 h-4 text-slate-500 transition-transform group-hover:rotate-180 hidden lg:block" />
               </button>
 
               {/* Dropdown Menu */}
-              <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200 z-[1000]">
-                <div className="px-4 py-3 border-b border-slate-50">
-                  <p className="text-xs text-slate-500 font-semibold">Signed in as</p>
-                  <p className="text-sm font-semibold text-slate-700 truncate">
-                    {user.phone}
-                  </p>
-                </div>
-                
-                <div className="py-1">
-                  <Link href="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#164e33] transition-colors">
-                    <User className="w-4 h-4" />
-                    My Profile
-                  </Link>
-                  <Link href="/notifications" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#164e33] transition-colors">
-                    <Bell className="w-4 h-4" />
-                    Notifications
-                  </Link>
-                </div>
+              <div className={`absolute right-0 top-full pt-2 w-56 z-[1000] ${forceCloseProfile ? 'hidden' : 'hidden lg:group-hover:block'}`}>
+                <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-4 py-3 border-b border-slate-50">
+                    <p className="text-xs text-slate-500 font-semibold">Signed in as</p>
+                    <p className="text-sm font-semibold text-slate-700 truncate">
+                      {user.phone}
+                    </p>
+                  </div>
 
-                <div className="border-t border-slate-50 pt-1">
-                  <button 
-                    onClick={() => logout()}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors font-medium"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
+                  <div className="py-1">
+                    <Link href="/profile" onClick={handleProfileDropdownClick} className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#164e33] transition-colors">
+                      <User className="w-4 h-4" />
+                      My Profile
+                    </Link>
+                    <Link href="/notifications" onClick={handleProfileDropdownClick} className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#164e33] transition-colors">
+                      <Bell className="w-4 h-4" />
+                      Notifications
+                    </Link>
+                  </div>
+
+                  <div className="border-t border-slate-50 pt-1">
+                    <button
+                      onClick={handleLogoutWithConfirm}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors font-medium"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
           {/* Mobile Menu Trigger */}
-          <button
-            className="lg:hidden p-2 text-slate-600"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X /> : <Menu />}
-          </button>
+          <div className="lg:hidden flex items-center gap-2">
+            <button
+              className="p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+              onClick={() => window.dispatchEvent(new CustomEvent('openMobileSearch'))}
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            <button
+              className="p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
       </div>
+      </nav>
 
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t border-slate-100 overflow-y-auto max-h-[85vh] scrollbar-none"
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-[100] lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+        {isMobileMenuOpen && (
+          <motion.div
+            key="drawer"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", duration: 0.3 }}
+            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-[360px] bg-white z-[110] lg:hidden flex flex-col shadow-2xl overflow-hidden"
           >
-            <div className="p-4 space-y-4">
+            {/* Drawer Header */}
+            <div className="bg-white p-4 flex items-center justify-between border-b border-slate-100 shrink-0">
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
+                <Image
+                  src="/logo.png"
+                  alt="MarketHub Logo"
+                  width={120}
+                  height={32}
+                  className="h-8 w-auto object-contain"
+                  priority
+                />
+              </Link>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-slate-100 text-slate-500 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Drawer Content */}
+            <div className="p-5 space-y-6 flex-1 overflow-y-auto scrollbar-none">
               {/* Mobile Search & Location Stack */}
-              <form
-                onSubmit={handleSearch}
-                className="space-y-3"
+              {/* Mobile Search Trigger */}
+              <div 
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  window.dispatchEvent(new CustomEvent('openMobileSearch'));
+                }}
+                className="flex items-center h-11 bg-slate-50 border border-slate-200 rounded-xl px-3 hover:border-[#FF4F00] transition-all cursor-pointer shadow-sm active:scale-[0.98]"
               >
-                {/* Location Selection on Mobile */}
-                <div className="relative">
-                  <div className="flex items-center h-11 bg-slate-50 border border-slate-200 rounded-xl px-3 focus-within:border-[#FF4F00] focus-within:bg-white transition-all cursor-pointer">
-                    <MapPin className="w-4 h-4 text-slate-400 mr-2 flex-shrink-0" />
-                    <input
-                      type="text"
-                      placeholder="Select Location"
-                      value={location}
-                      onChange={(e) => {
-                        setLocation(e.target.value);
-                        if (!isLocationDropdownOpen) setIsLocationDropdownOpen(true);
-                      }}
-                      onFocus={() => {
-                        setIsLocationDropdownOpen(true);
-                        setIsSearchDropdownOpen(false);
-                      }}
-                      className="bg-transparent flex-grow h-full text-sm font-normal text-[#111] outline-none placeholder:text-slate-400"
-                    />
-                    {location && location !== "India" && (
-                      <button
-                        type="button"
-                        onClick={() => setLocation("India")}
-                        className="p-1 hover:bg-slate-200 rounded-full transition-colors"
-                      >
-                        <X className="w-3.5 h-3.5 text-slate-400" />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Mobile Location Suggestions dropdown */}
-                  <AnimatePresence>
-                    {isLocationDropdownOpen && (
-                      <>
-                        <div
-                          className="fixed inset-0 z-30"
-                          onClick={() => setIsLocationDropdownOpen(false)}
-                        />
-                        <motion.div
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 5 }}
-                          className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-40 overflow-y-auto max-h-[250px] py-1"
-                        >
-                          <button
-                            type="button"
-                            disabled={isDetecting}
-                            className="w-full flex items-center gap-2.5 px-4 py-3 text-[#FF4F00] hover:bg-orange-50 transition-colors border-b border-slate-100 disabled:opacity-50 text-left font-semibold text-sm"
-                            onClick={handleDetectLocation}
-                          >
-                            <LocateFixed className={`w-4 h-4 ${isDetecting ? "animate-spin" : ""}`} />
-                            <span>{isDetecting ? "Detecting..." : "Detect Location"}</span>
-                          </button>
-
-                          <div className="px-4 py-2">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                              {isSearchingLocations
-                                ? "Searching..."
-                                : location.length >= 3
-                                  ? "Suggestions"
-                                  : "Your Areas"}
-                            </span>
-
-                            <div className="space-y-0.5">
-                              {isSearchingLocations ? (
-                                <div className="py-2 space-y-2">
-                                  <div className="h-3 bg-slate-100 rounded-full animate-pulse w-3/4"></div>
-                                  <div className="h-3 bg-slate-100 rounded-full animate-pulse w-1/2"></div>
-                                </div>
-                              ) : dynamicLocations.length > 0 ? (
-                                dynamicLocations.map((loc, i) => (
-                                  <button
-                                    key={i}
-                                    type="button"
-                                    onClick={() => {
-                                      setLocation(loc);
-                                      saveRecentLocation(loc);
-                                      setIsLocationDropdownOpen(false);
-                                    }}
-                                    className="w-full text-left py-2 text-slate-700 hover:text-[#FF4F00] font-medium text-sm transition-colors block truncate"
-                                  >
-                                    {loc}
-                                  </button>
-                                ))
-                              ) : location.length >= 3 ? (
-                                <div className="py-2 text-slate-400 text-xs font-medium">
-                                  No results found
-                                </div>
-                              ) : (
-                                <>
-                                  {recentLocations.length > 0 && (
-                                    <div className="mb-2">
-                                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                                        Recent
-                                      </span>
-                                      {recentLocations.map((loc, i) => (
-                                        <button
-                                          key={`recent-${i}`}
-                                          type="button"
-                                          onClick={() => {
-                                            setLocation(loc);
-                                            setIsLocationDropdownOpen(false);
-                                          }}
-                                          className="w-full text-left py-1.5 text-slate-700 hover:text-[#FF4F00] font-medium text-xs transition-colors flex items-center gap-2 truncate"
-                                        >
-                                          <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                                          {loc}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  )}
-
-                                  <div>
-                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                                      Trending
-                                    </span>
-                                    {trendingLocations.map((loc, i) => (
-                                      <button
-                                        key={`trending-${i}`}
-                                        type="button"
-                                        onClick={() => {
-                                          setLocation(loc);
-                                          saveRecentLocation(loc);
-                                          setIsLocationDropdownOpen(false);
-                                        }}
-                                        className="w-full text-left py-1.5 text-slate-700 hover:text-[#FF4F00] font-medium text-xs transition-colors block truncate"
-                                      >
-                                        {loc}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </motion.div>
-                      </>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Search Input on Mobile */}
-                <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl h-11 px-3 focus-within:border-[#FF4F00] focus-within:bg-white transition-all pr-1">
-                  <Search className="w-4 h-4 text-slate-400 mr-2 flex-shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="Search products, services or suppliers..."
-                    className="flex-grow h-full bg-transparent text-sm font-normal text-[#111] outline-none placeholder:text-slate-400"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      if (!isSearchDropdownOpen) setIsSearchDropdownOpen(true);
-                    }}
-                    onFocus={() => {
-                      setIsSearchDropdownOpen(true);
-                      setIsLocationDropdownOpen(false);
-                    }}
-                  />
-                  <button
-                    type="submit"
-                    className="bg-[#FF4F00] hover:bg-[#E64600] text-white px-3 h-9 rounded-lg transition-all text-xs font-semibold shadow-sm active:scale-95"
-                  >
-                    Go
-                  </button>
-
-                  {/* Mobile Search Suggestions Dropdown */}
-                  <AnimatePresence>
-                    {isSearchDropdownOpen && (
-                      <>
-                        <div
-                          className="fixed inset-0 z-30"
-                          onClick={() => setIsSearchDropdownOpen(false)}
-                        />
-                        <motion.div
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 5 }}
-                          className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-40 overflow-y-auto max-h-[250px] py-1"
-                        >
-                          <div className="px-4 py-2 space-y-4">
-                            <div>
-                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                                Trending Searches
-                              </span>
-                              <div className="flex flex-wrap gap-1.5">
-                                {trendingSearches.map((item, i) => (
-                                  <button
-                                    key={`trend-${i}`}
-                                    type="button"
-                                    onClick={() => handleSearch(null, item)}
-                                    className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs text-slate-600 hover:border-[#FF4F00] hover:text-[#FF4F00] transition-all"
-                                  >
-                                    {item}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div>
-                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                                Categories
-                              </span>
-                              <div className="space-y-0.5">
-                                {allCategories.slice(0, 8).map((cat, i) => (
-                                  <button
-                                    key={`cat-${i}`}
-                                    type="button"
-                                    onClick={() => handleSearch(null, cat.name, cat.id)}
-                                    className="w-full text-left py-1.5 text-slate-700 hover:text-[#FF4F00] font-medium text-xs transition-colors block truncate"
-                                  >
-                                    {cat.name}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      </>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </form>
+                <Search className="w-4 h-4 text-slate-400 mr-2 flex-shrink-0" />
+                <span className="text-sm font-medium text-slate-400">Search products, locations...</span>
+              </div>
 
               {user ? (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <div className="w-12 h-12 bg-[#164e33] rounded-full flex items-center justify-center text-white text-lg font-semibold shadow-inner overflow-hidden shrink-0">
-                      {user.avatar ? (
-                        <img src={user.avatar} alt={user.name || "User"} className="w-full h-full object-cover" />
-                      ) : (
-                        user.name ? user.name.charAt(0) : "G"
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-slate-800 truncate">{user.name || "Guest User"}</p>
-                      <p className="text-xs text-slate-500 truncate">{user.phone}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Link 
-                      href="/profile" 
+                  <div className="flex flex-col border border-slate-100 rounded-xl overflow-hidden bg-white shadow-sm">
+                    <Link
+                      href="/profile"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors"
+                      className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors"
                     >
-                      <User className="w-5 h-5 text-slate-400" />
-                      <span className="text-xs font-semibold text-slate-700">Profile</span>
+                      <User className="w-5 h-5 text-[#164e33] shrink-0" />
+                      <span className="text-sm font-semibold text-slate-700">My Profile</span>
                     </Link>
-                    <Link 
-                      href="/notifications" 
+                    <Link
+                      href="/notifications"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex flex-col items-center gap-2 p-4 bg-white border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors"
+                      className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors"
                     >
-                      <Bell className="w-5 h-5 text-slate-400" />
-                      <span className="text-xs font-semibold text-slate-700">Alerts</span>
+                      <Bell className="w-5 h-5 text-[#164e33] shrink-0" />
+                      <span className="text-sm font-semibold text-slate-700">Alerts & Notifications</span>
                     </Link>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Link
+                      href="/post-requirement"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                    >
+                      <ClipboardList className="w-5 h-5 text-[#164e33] shrink-0" />
+                      <span className="text-sm font-semibold text-slate-700">Post Enquiry</span>
+                    </Link>
                     <Link
                       href="/sell"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center justify-center gap-3 p-3.5 bg-slate-50 border border-slate-100 rounded-xl font-semibold text-slate-700 text-sm hover:bg-slate-100 transition-colors w-full"
+                      className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors"
                     >
-                      <ShoppingBag className="w-5 h-5 text-[#FF4F00] flex-shrink-0" /> Become a Supplier
+                      <ShoppingBag className="w-5 h-5 text-[#FF4F00] shrink-0" />
+                      <span className="text-sm font-semibold text-slate-700">Become a Supplier</span>
+                    </Link>
+                    <Link
+                      href="/about"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                    >
+                      <Info className="w-5 h-5 text-[#164e33] shrink-0" />
+                      <span className="text-sm font-semibold text-slate-700">About Us</span>
+                    </Link>
+                    <Link
+                      href="/contact"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                    >
+                      <Phone className="w-5 h-5 text-[#164e33] shrink-0" />
+                      <span className="text-sm font-semibold text-slate-700">Contact Support</span>
                     </Link>
                     <button
-                      onClick={() => {
-                        logout();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="flex items-center justify-center gap-3 p-3.5 bg-red-50 text-red-600 rounded-xl font-semibold text-sm hover:bg-red-100/50 transition-colors w-full"
+                      onClick={handleLogoutWithConfirm}
+                      className="flex items-center gap-3 p-3.5 hover:bg-red-50 text-red-500 transition-colors w-full text-left"
                     >
-                      <LogOut className="w-5 h-5 flex-shrink-0" /> Logout
+                      <LogOut className="w-5 h-5 shrink-0" />
+                      <span className="text-sm font-semibold">Logout</span>
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Link
-                    href="/sell"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-3 p-3.5 bg-slate-50 border border-slate-100 rounded-xl font-semibold text-slate-700 text-sm hover:bg-slate-100 transition-colors w-full"
-                  >
-                    <ShoppingBag className="w-5 h-5 text-[#FF4F00] flex-shrink-0" /> Become a Supplier
-                  </Link>
+                <div className="flex flex-col border border-slate-100 rounded-xl overflow-hidden bg-white shadow-sm">
                   <button
                     onClick={() => {
                       setIsBuyerDrawerOpen(true);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center justify-center gap-3 p-3.5 bg-[#164e33] hover:bg-[#113a26] text-white rounded-xl font-semibold text-sm transition-colors w-full shadow-md shadow-emerald-100/50"
+                    className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-emerald-50 text-[#164e33] transition-colors w-full text-left"
                   >
-                    <User className="w-5 h-5 flex-shrink-0" /> Login
+                    <User className="w-5 h-5 shrink-0" />
+                    <span className="text-sm font-semibold">Login / Register</span>
                   </button>
+                  <Link
+                    href="/post-requirement"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                  >
+                    <ClipboardList className="w-5 h-5 text-[#164e33] shrink-0" />
+                    <span className="text-sm font-semibold text-slate-700">Post Enquiry</span>
+                  </Link>
+                  <Link
+                    href="/sell"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                  >
+                    <ShoppingBag className="w-5 h-5 text-[#FF4F00] shrink-0" />
+                    <span className="text-sm font-semibold text-slate-700">Become a Supplier</span>
+                  </Link>
+                  <Link
+                    href="/about"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 p-3.5 border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                  >
+                    <Info className="w-5 h-5 text-[#164e33] shrink-0" />
+                    <span className="text-sm font-semibold text-slate-700">About Us</span>
+                  </Link>
+                  <Link
+                    href="/contact"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 p-3.5 hover:bg-slate-50 transition-colors"
+                  >
+                    <Phone className="w-5 h-5 text-[#164e33] shrink-0" />
+                    <span className="text-sm font-semibold text-slate-700">Contact Support</span>
+                  </Link>
                 </div>
               )}
             </div>
@@ -1197,16 +1114,19 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      <BuyerLogin 
-        isOpen={isBuyerDrawerOpen} 
-        onClose={() => setIsBuyerDrawerOpen(false)} 
+      {/* Mobile Bottom Navigation Component */}
+      <BottomNav setIsMobileMenuOpen={setIsMobileMenuOpen} />
+
+      <BuyerLogin
+        isOpen={isBuyerDrawerOpen}
+        onClose={() => setIsBuyerDrawerOpen(false)}
       />
-      
-      <VendorLogin 
-        isOpen={isVendorDrawerOpen} 
-        onClose={() => setIsVendorDrawerOpen(false)} 
+
+      <VendorLogin
+        isOpen={isVendorDrawerOpen}
+        onClose={() => setIsVendorDrawerOpen(false)}
       />
-    </nav>
+    </>
   );
 };
 

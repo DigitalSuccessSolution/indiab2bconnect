@@ -5,6 +5,7 @@ import { ShieldCheck, Target, ArrowRight, Wallet, TrendingUp, Users, CheckCircle
 import VendorRegister from '@/components/VendorRegister';
 import VendorLogin from '@/components/VendorLogin';
 import PricingCard from '@/components/dashboard/PricingCard';
+import AdvisorCallPopup from '@/components/AdvisorCallPopup';
 import { apiFetch } from '@/lib/api';
 import { Roboto } from "next/font/google";
 
@@ -65,7 +66,7 @@ export default function SellWithUsPage() {
     <div className={`min-h-screen bg-white text-slate-800 ${roboto.className}`}>
       
       {/* --- INDIAMART STYLE HERO --- */}
-      <section className="relative pt-24 pb-32 md:pt-32 md:pb-40 bg-gradient-to-br from-[#FF4F00] to-[#E64600] overflow-hidden">
+      <section className="relative pt-20 pb-28 md:pt-32 md:pb-40 bg-gradient-to-br from-[#FF4F00] to-[#E64600] overflow-hidden">
         {/* Subtle background circles for depth */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
@@ -75,37 +76,39 @@ export default function SellWithUsPage() {
             
             {/* Left Content */}
             <div className="w-full lg:w-3/5 text-white text-center lg:text-left">
-              <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-white font-semibold text-sm uppercase tracking-wider mb-6">
+              <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-white font-semibold text-xs sm:text-sm uppercase tracking-wider mb-4 sm:mb-6">
                 India's Largest B2B Platform
               </span>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-white drop-shadow-sm">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6 text-white drop-shadow-sm">
                 Grow your Vyapar.
               </h1>
               
-              <p className="text-lg md:text-xl text-white/90 mb-10 max-w-xl mx-auto lg:mx-0 font-medium">
+              <p className="text-base sm:text-lg md:text-xl text-white/90 mb-8 sm:mb-10 max-w-xl mx-auto lg:mx-0 font-medium">
                 Join 5 Lakh+ Indian manufacturers and wholesalers. Create your free digital catalog and start receiving bulk orders today.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col items-center sm:flex-row gap-4 justify-center lg:justify-start">
                 <button 
                   onClick={() => setIsRegisterOpen(true)} 
-                  className="px-8 py-4 bg-white text-[#E64600] rounded-md font-semibold text-lg hover:bg-slate-50 transition-colors shadow-lg flex items-center justify-center gap-2"
+                  className="px-8 py-3.5 sm:py-4 bg-white text-[#E64600] rounded-md font-semibold text-base sm:text-lg hover:bg-slate-50 transition-colors shadow-lg flex items-center justify-center gap-2"
                 >
                   Start Selling for Free <ArrowRight size={20} />
                 </button>
                 <button 
                   onClick={() => setIsLoginOpen(true)} 
-                  className="px-8 py-4 bg-transparent border border-white text-white rounded-md font-semibold text-lg hover:bg-white/10 transition-colors flex items-center justify-center"
+                  className="px-8 py-3.5 sm:py-4 bg-transparent border border-white text-white rounded-md font-semibold text-base sm:text-lg hover:bg-white/10 transition-colors flex items-center justify-center"
                 >
                   Login to Account
                 </button>
               </div>
 
-              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-8 text-white/90 font-medium text-sm">
-                 <div className="flex items-center gap-2"><CheckCircle size={18} className="text-yellow-300" /> 100% Free Setup</div>
-                 <div className="flex items-center gap-2"><CheckCircle size={18} className="text-yellow-300" /> No Commission</div>
-                 <div className="flex items-center gap-2"><CheckCircle size={18} className="text-yellow-300" /> PAN India Reach</div>
+              <div className="mt-8 flex justify-center lg:justify-start">
+                <div className="flex flex-col items-start sm:flex-row sm:items-center gap-3 sm:gap-8 text-white/90 font-medium text-sm">
+                   <div className="flex items-center gap-2"><CheckCircle size={18} className="text-yellow-300 shrink-0" /> 100% Free Setup</div>
+                   <div className="flex items-center gap-2"><CheckCircle size={18} className="text-yellow-300 shrink-0" /> No Commission</div>
+                   <div className="flex items-center gap-2"><CheckCircle size={18} className="text-yellow-300 shrink-0" /> PAN India Reach</div>
+                </div>
               </div>
             </div>
 
@@ -134,28 +137,28 @@ export default function SellWithUsPage() {
       </section>
 
       {/* --- OVERLAPPING STATS STRIP --- */}
-      <div className="relative z-20 -mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-         <div className="bg-white rounded-lg shadow-lg border border-slate-100 p-6 md:p-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-x divide-slate-100 text-center">
-               <div className="flex flex-col items-center">
-                 <Users size={32} className="text-[#E64600] mb-3" strokeWidth={1.5} />
-                 <p className="text-2xl font-bold text-slate-900">4.8M+</p>
-                 <p className="text-sm font-medium text-slate-500">Active Buyers</p>
+      <div className="relative z-20 -mt-12 sm:-mt-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+         <div className="bg-white rounded-lg shadow-lg border border-slate-100 p-4 sm:p-6 md:p-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 md:gap-y-0 text-center">
+               <div className="flex flex-col items-center border-r border-slate-100">
+                 <Users size={28} className="text-[#E64600] mb-2 sm:mb-3 md:w-8 md:h-8" strokeWidth={1.5} />
+                 <p className="text-xl sm:text-2xl font-bold text-slate-900">4.8M+</p>
+                 <p className="text-xs sm:text-sm font-medium text-slate-500">Active Buyers</p>
                </div>
-               <div className="flex flex-col items-center">
-                 <Target size={32} className="text-[#E64600] mb-3" strokeWidth={1.5} />
-                 <p className="text-2xl font-bold text-slate-900">25,000+</p>
-                 <p className="text-sm font-medium text-slate-500">Categories</p>
+               <div className="flex flex-col items-center md:border-r md:border-slate-100">
+                 <Target size={28} className="text-[#E64600] mb-2 sm:mb-3 md:w-8 md:h-8" strokeWidth={1.5} />
+                 <p className="text-xl sm:text-2xl font-bold text-slate-900">25,000+</p>
+                 <p className="text-xs sm:text-sm font-medium text-slate-500">Categories</p>
                </div>
-               <div className="flex flex-col items-center">
-                 <ShieldCheck size={32} className="text-[#E64600] mb-3" strokeWidth={1.5} />
-                 <p className="text-2xl font-bold text-slate-900">5 Lakh+</p>
-                 <p className="text-sm font-medium text-slate-500">Verified Sellers</p>
+               <div className="flex flex-col items-center border-r border-slate-100 md:border-r md:border-t-0 pt-6 md:pt-0 border-t">
+                 <ShieldCheck size={28} className="text-[#E64600] mb-2 sm:mb-3 md:w-8 md:h-8" strokeWidth={1.5} />
+                 <p className="text-xl sm:text-2xl font-bold text-slate-900">5 Lakh+</p>
+                 <p className="text-xs sm:text-sm font-medium text-slate-500">Verified Sellers</p>
                </div>
-               <div className="flex flex-col items-center">
-                 <TrendingUp size={32} className="text-[#E64600] mb-3" strokeWidth={1.5} />
-                 <p className="text-2xl font-bold text-slate-900">100%</p>
-                 <p className="text-sm font-medium text-slate-500">Secure Payments</p>
+               <div className="flex flex-col items-center md:border-t-0 pt-6 md:pt-0 border-t border-slate-100">
+                 <TrendingUp size={28} className="text-[#E64600] mb-2 sm:mb-3 md:w-8 md:h-8" strokeWidth={1.5} />
+                 <p className="text-xl sm:text-2xl font-bold text-slate-900">100%</p>
+                 <p className="text-xs sm:text-sm font-medium text-slate-500">Secure Payments</p>
                </div>
             </div>
          </div>
@@ -228,8 +231,8 @@ export default function SellWithUsPage() {
               </div>
            </div>
            
-           <div className="mt-12 text-center">
-             <button onClick={() => setIsRegisterOpen(true)} className="px-10 py-4 bg-[#164e33] text-white rounded-md font-semibold text-lg hover:bg-[#0d2a1b] transition-colors shadow-lg">
+           <div className="mt-10 sm:mt-12 text-center px-4">
+             <button onClick={() => setIsRegisterOpen(true)} className="px-6 py-3 sm:px-10 sm:py-4 bg-[#164e33] text-white rounded-md font-semibold text-base sm:text-lg hover:bg-[#0d2a1b] transition-colors shadow-lg w-full sm:w-auto">
                 Create Free Account
              </button>
            </div>
@@ -318,7 +321,7 @@ export default function SellWithUsPage() {
          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Lakhs of buyers are waiting for your products</h2>
             <p className="text-emerald-100/90 text-lg mb-8 max-w-2xl">Join the fastest growing B2B platform in India. Registration is free and takes less than 2 minutes.</p>
-            <button onClick={() => setIsRegisterOpen(true)} className="px-10 py-4 bg-[#FF4F00] text-white rounded-md font-semibold text-xl hover:bg-[#E64600] transition-colors shadow-lg shadow-black/20">
+            <button onClick={() => setIsRegisterOpen(true)} className="px-6 py-3 sm:px-10 sm:py-4 bg-[#FF4F00] text-white rounded-md font-semibold text-base sm:text-xl hover:bg-[#E64600] transition-colors shadow-lg shadow-black/20 w-full sm:w-auto">
               Start Selling Now
             </button>
          </div>
@@ -339,6 +342,8 @@ export default function SellWithUsPage() {
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
       />
+
+      <AdvisorCallPopup />
     </div>
   );
 }

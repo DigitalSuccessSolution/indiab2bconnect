@@ -159,7 +159,7 @@ export default function VendorPublicProfile() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#f8fafc] animate-pulse">
+    <div className="min-h-screen bg-white animate-pulse">
       {/* Profile Header Skeleton */}
       <div className="bg-[#164e33]/90 pt-24 pb-32">
         <div className="w-full px-4 md:px-12">
@@ -231,7 +231,7 @@ export default function VendorPublicProfile() {
   );
 
   if (!vendor) return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center pt-24">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center pt-24">
         <h2 className="text-3xl font-semibold text-gray-800 mb-4 uppercase tracking-tighter">Supplier Not Found</h2>
         <p className="text-gray-500 mb-8 font-medium">The requested business profile is currently unavailable.</p>
         <button onClick={() => router.back()} className="px-10 py-4 bg-[#164e33] hover:bg-black rounded-xl text-white font-bold flex items-center gap-3 transition-all ">
@@ -247,7 +247,7 @@ export default function VendorPublicProfile() {
     : '0.0';
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-white">
       <VendorLoginModal 
         isOpen={loginModalOpen} 
         onClose={() => {

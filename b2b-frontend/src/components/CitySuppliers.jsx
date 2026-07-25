@@ -42,21 +42,21 @@ const CityIcon = ({ city }) => {
   return (
     <div
       onClick={() => router.push(`/search?city=${city.name}`)}
-      className="flex flex-col items-center group cursor-pointer min-w-[90px] sm:min-w-[110px] md:min-w-0 shrink-0 snap-start"
+      className="flex flex-col items-center group cursor-pointer min-w-[72px] sm:min-w-[90px] md:min-w-0 shrink-0 snap-start"
     >
       <div 
-        className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-2 md:mb-3 group-hover:scale-105 group-hover:border-[#164e33]/40 group-hover:bg-white group-hover:shadow-[0_12px_30px_-8px_rgba(22,78,51,0.08)] relative overflow-hidden"
+        className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-2 md:mb-3 group-hover:scale-105 group-hover:border-[#164e33]/40 group-hover:bg-white group-hover:shadow-[0_12px_30px_-8px_rgba(22,78,51,0.08)] relative overflow-hidden"
         style={{ transition: "all 400ms cubic-bezier(0.25, 1, 0.5, 1)" }}
       >
         {/* The Icon */}
         <Icon 
-          className="w-8 h-8 md:w-10 md:h-10 text-slate-800 group-hover:text-[#164e33] stroke-[1.5]"
+          className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-slate-800 group-hover:text-[#164e33] stroke-[1.5]"
           style={{ transition: "all 400ms cubic-bezier(0.25, 1, 0.5, 1)" }}
         />
       </div>
 
       <span 
-        className="text-[12px] md:text-base font-medium text-slate-700 group-hover:text-[#164e33]"
+        className="text-[11px] sm:text-[12px] md:text-[15px] font-medium text-slate-700 group-hover:text-[#164e33]"
         style={{ transition: "all 400ms cubic-bezier(0.25, 1, 0.5, 1)" }}
       >
         {city.name}
@@ -67,13 +67,13 @@ const CityIcon = ({ city }) => {
 
 const CitySuppliers = () => {
   return (
-    <section className="w-full bg-white py-8 md:py-10">
+    <section className="w-full py-8 md:py-10">
       <div className="max-w-[1600px] mx-auto px-4 md:px-8">
-        <h2 className="text-xl md:text-3xl font-medium text-slate-900 mb-6 md:mb-8">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-slate-900 mb-5 md:mb-8">
           Explore Vendors by City
         </h2>
 
-        <div className="flex flex-nowrap md:grid md:grid-cols-5 gap-6 md:gap-y-8 md:gap-x-4 overflow-x-auto pt-2 pb-4 md:pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-1 -mx-1 md:px-0 md:mx-0">
+        <div className="flex flex-nowrap md:grid md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3 sm:gap-6 md:gap-y-8 md:gap-x-4 overflow-x-auto overflow-y-hidden pt-2 pb-4 md:pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4 -mx-4 md:px-0 md:mx-0">
           {cities.map((city) => (
             <CityIcon key={city.name} city={city} />
           ))}

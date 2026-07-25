@@ -57,7 +57,7 @@ const DetailSkeleton = () => (
         </div>
 
         {/* Title and Meta Skeleton */}
-        <div className="bg-white p-6 space-y-4 rounded-xl border-b border-slate-100 ">
+        <div className="bg-white p-6 space-y-4 rounded-xl border border-slate-100 ">
           <div className="h-8 bg-gray-200 rounded w-3/4" />
           <div className="flex gap-4">
             <div className="h-6 bg-gray-200 rounded w-32" />
@@ -87,7 +87,7 @@ const DetailSkeleton = () => (
 
       {/* Sidebar Skeleton */}
       <aside className="lg:w-[380px] space-y-6">
-        <div className="bg-white p-6 rounded-xl border-b border-slate-100  space-y-4">
+        <div className="bg-white p-6 rounded-xl border border-slate-100  space-y-4">
           <div className="flex gap-4 items-center">
             <div className="w-14 h-14 bg-gray-200 rounded-xl" />
             <div className="space-y-2 flex-1">
@@ -107,7 +107,7 @@ const DetailSkeleton = () => (
           </div>
           <div className="h-10 bg-gray-200 rounded w-full" />
         </div>
-        <div className="bg-white p-6 rounded-xl border-b border-slate-100  space-y-4">
+        <div className="bg-white p-6 rounded-xl border border-slate-100  space-y-4">
           <div className="h-14 bg-gray-200 rounded-xl w-full" />
           <div className="h-14 bg-gray-200 rounded-xl w-full" />
         </div>
@@ -372,7 +372,7 @@ export default function ProductDetailPage() {
 
   if (!product)
     return (
-      <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center gap-4 pt-24">
+      <div className="min-h-screen bg-[#fcfcfc] flex flex-col items-center justify-center gap-4 pt-24">
         <h2 className="text-2xl font-semibold text-gray-800">
           Product not found
         </h2>
@@ -415,7 +415,7 @@ export default function ProductDetailPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-white">
       {/* ── IndiaMart-style Enquiry Modal ── */}
       {enquiryOpen && product && (
         <div
@@ -666,22 +666,22 @@ export default function ProductDetailPage() {
       />
       <main className="max-w-7xl mx-auto px-4 md:px-10 py-6 pt-28">
         {/* Breadcrumb row */}
-        <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+        <div className="flex items-center flex-wrap gap-1 md:gap-1.5 text-[13px] text-gray-400 mb-4">
           <button
             onClick={() => router.back()}
-            className="hover:text-[#164e33] transition-colors flex items-center gap-1 font-medium text-gray-500"
+            className="hover:text-[#164e33] transition-colors flex items-center gap-1 font-medium text-gray-500 shrink-0 whitespace-nowrap"
           >
-            <ArrowLeft className="w-4 h-4" /> Search Results
+            <ArrowLeft className="w-4 h-4" /> Back
           </button>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4 shrink-0" />
           <Link
             href={`/supplier/${vendor.businessName ? `${vendor.businessName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${vendor.id}` : vendor.id}`}
-            className="hover:text-[#E64600] transition-colors font-medium text-gray-500 text-[11px]"
+            className="hover:text-[#E64600] transition-colors font-medium text-gray-500 text-sm shrink-0 whitespace-nowrap"
           >
             {vendor.businessName}
           </Link>
-          <ChevronRight className="w-4 h-4" />
-          <span className="text-gray-400 font-medium truncate max-w-[200px]">
+          <ChevronRight className="w-4 h-4 shrink-0" />
+          <span className="text-gray-400 font-medium truncate shrink-0 max-w-[150px] sm:max-w-[250px] md:max-w-[300px] whitespace-nowrap">
             {product.name}
           </span>
         </div>
@@ -713,7 +713,7 @@ export default function ProductDetailPage() {
               )}
 
               {/* Main Image Display - Taller Vertical Aspect */}
-              <div className="flex-1 w-full bg-white order-1 md:order-2 relative group border-b border-slate-100 rounded-xl">
+              <div className="flex-1 w-full bg-white order-1 md:order-2 relative group border border-slate-100 rounded-xl overflow-hidden">
                 {(product.images && product.images.length > 0) ||
                   product.imageUrl ||
                   product.image ? (
@@ -815,14 +815,14 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Premium Title & Meta Data Structure */}
-            <div className="bg-white p-4 md:p-6 space-y-4 border-b border-slate-100 rounded-xl  mb-6">
+            <div className="bg-white p-4 md:p-6 space-y-4 border border-slate-100 rounded-xl  mb-6">
               <div>
                 <h1 className="text-xl md:text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
                   {product.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 md:gap-4">
                   {product.category && (
-                    <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-[15px] font-medium text-[#E64600] bg-slate-50 px-2.5 py-1.5 rounded-md border-b border-slate-100/50">
+                    <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-[15px] font-medium text-[#E64600] bg-slate-50 px-2.5 py-1.5 rounded-md border border-slate-100/50">
                       <Tag className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       <span>{product.category}</span>
                     </div>
@@ -964,15 +964,15 @@ export default function ProductDetailPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
-              className="bg-white p-4 md:p-6 space-y-6 rounded-xl"
+              className="bg-white p-4 md:p-6 space-y-6 rounded-xl border border-slate-100"
             >
               {/* Header */}
-              <div className="flex flex-row items-center justify-between gap-2 md:gap-4 pb-4 border-b border-slate-100 overflow-x-auto no-scrollbar">
-                <div className="flex items-center gap-2 md:gap-3 shrink-0">
+              <div className="flex flex-row items-center justify-between gap-2 md:gap-4 pb-4 border-b border-slate-100 flex-wrap">
+                <div className="flex flex-wrap items-center gap-2 md:gap-3">
                   <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
                     <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-[#E64600]" />
                   </div>
-                  <h3 className="text-[15px] md:text-xl font-semibold text-gray-900 leading-tight whitespace-nowrap">
+                  <h3 className="text-[15px] md:text-xl font-semibold text-gray-900 leading-tight">
                     Ratings & Reviews
                   </h3>
                   {reviews.length > 0 && (
@@ -982,11 +982,11 @@ export default function ProductDetailPage() {
                   )}
                 </div>
                 {avgRating && (
-                  <div className="flex items-center gap-1 md:gap-1.5 bg-amber-50 px-2.5 md:px-4 py-1 md:py-2 rounded-lg md:rounded-xl border border-amber-100 shrink-0">
-                    <span className="text-base md:text-2xl font-semibold text-amber-600">
+                  <div className="flex items-center gap-1 md:gap-1.5 shrink-0">
+                    <span className="text-sm md:text-lg font-semibold text-amber-600">
                       {avgRating}
                     </span>
-                    <Star className="w-4 h-4 md:w-6 md:h-6 fill-amber-400 text-amber-400" />
+                    <Star className="w-4 h-4 md:w-5 md:h-5 fill-amber-400 text-amber-400" />
                   </div>
                 )}
               </div>
@@ -995,33 +995,35 @@ export default function ProductDetailPage() {
               {user ? (
                 <form
                   onSubmit={handleReview}
-                  className="bg-slate-50/40 rounded-xl p-5 space-y-4 border-b border-slate-100/60 "
+                  className="bg-slate-50/40 rounded-xl p-5 space-y-4 border border-slate-100/60 "
                 >
                   <h4 className="text-base font-medium text-gray-800 flex items-center gap-2">
                     Write a Review
                   </h4>
 
                   {/* Star Picker */}
-                  <div className="flex items-center gap-2 bg-white px-5 py-3 rounded-xl border-b border-slate-100/50 w-max ">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setReviewRating(star)}
-                        onMouseEnter={() => setHoverRating(star)}
-                        onMouseLeave={() => setHoverRating(0)}
-                        className="p-1 focus:outline-none transition-transform hover:scale-110"
-                      >
-                        <Star
-                          className={`w-8 h-8 transition-colors ${star <= (hoverRating || reviewRating)
-                            ? "fill-amber-400 text-amber-400"
-                            : "text-gray-200"
-                            }`}
-                        />
-                      </button>
-                    ))}
+                  <div className="flex flex-wrap items-center gap-1.5 md:gap-2 bg-white px-3 md:px-5 py-2.5 md:py-3 rounded-xl border border-slate-100/50 w-full sm:w-max">
+                    <div className="flex items-center gap-1 md:gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setReviewRating(star)}
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          className="p-1 focus:outline-none transition-transform hover:scale-110"
+                        >
+                          <Star
+                            className={`w-6 h-6 md:w-8 md:h-8 transition-colors ${star <= (hoverRating || reviewRating)
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-gray-200"
+                              }`}
+                          />
+                        </button>
+                      ))}
+                    </div>
                     {reviewRating > 0 && (
-                      <span className="ml-4 text-[15px] font-medium text-[#164e33]">
+                      <span className="ml-1 md:ml-4 text-[13px] md:text-[15px] font-medium text-[#164e33] whitespace-nowrap">
                         {
                           [
                             "",
@@ -1072,7 +1074,7 @@ export default function ProductDetailPage() {
                   </button>
                 </form>
               ) : (
-                <div className="bg-gray-50 rounded-xl p-6 text-center border-b border-slate-100">
+                <div className="bg-white rounded-xl p-6 text-center border border-slate-100">
                   <p className="text-sm text-gray-500">
                     <button
                       onClick={() => {
@@ -1184,7 +1186,7 @@ export default function ProductDetailPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
-                className="bg-white p-4 border-b border-slate-100 rounded-xl"
+                className="bg-white p-4 border border-slate-100 rounded-xl"
               >
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center gap-3">
@@ -1270,7 +1272,7 @@ export default function ProductDetailPage() {
 
                   <Link
                     href={`/supplier/${vendor.businessName ? `${vendor.businessName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${vendor.id}` : vendor.id}`}
-                    className="w-full py-2.5 bg-gray-50 hover:bg-[#E64600] hover:text-white text-[#E64600] rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2 border-b border-slate-100"
+                    className="w-full py-2.5 bg-gray-50 hover:bg-[#E64600] hover:text-white text-[#E64600] rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2"
                   >
                     View Supplier Store <ExternalLink className="w-3.5 h-3.5" />
                   </Link>
@@ -1278,7 +1280,7 @@ export default function ProductDetailPage() {
               </motion.div>
 
               {/* Direct Contact CTA */}
-              <div className="bg-white p-6 border-b border-slate-100 rounded-xl relative overflow-hidden group">
+              <div className="bg-white p-6 border border-slate-100 rounded-xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-slate-50 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-slate-100/50 transition-all"></div>
 
                 <h3 className="text-sm font-semibold text-gray-800 mb-6 flex items-center gap-2 relative z-10">
