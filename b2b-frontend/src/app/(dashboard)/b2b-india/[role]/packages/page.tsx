@@ -49,7 +49,7 @@ export default function AdminPackages() {
       text: "You want to retire this membership tier?",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#111827',
+      confirmButtonColor: '#164e33',
       cancelButtonColor: '#ef4444',
       confirmButtonText: 'Yes, delete it!',
       showLoaderOnConfirm: true,
@@ -71,8 +71,8 @@ export default function AdminPackages() {
         icon: 'success', 
         title: 'Deleted!', 
         text: 'Membership tier has been removed.', 
-        timer: 1500, 
-        showConfirmButton: false 
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#164e33'
       });
     }
   };
@@ -247,8 +247,8 @@ export default function AdminPackages() {
                     icon: 'success',
                     title: 'Success!',
                     text: `Plan ${currentPackage ? 'updated' : 'added'} successfully.`,
-                    timer: 2000,
-                    showConfirmButton: false
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#164e33'
                   });
                 } catch (err: any) {
                   console.error('Failed to save package:', err);

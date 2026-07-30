@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import {
   Users,
@@ -34,6 +34,7 @@ import {
 
 export default function SuperAdminDashboard() {
   const params = useParams();
+  const router = useRouter();
   const role = (params?.role as string) || '';
   const isSuperAdmin = role === 'super-admin';
   const displayRole = isSuperAdmin ? 'Super Admin' : 'Admin';
@@ -79,10 +80,10 @@ export default function SuperAdminDashboard() {
   const recentLeads = dashboardData?.recentLeads || [];
 
   const statCards = [
-    { label: "Total Revenue", value: `₹${(summary.totalRevenue || 0).toLocaleString()}`, icon: Wallet, color: "text-emerald-600", trend: trends?.revenue?.value, isUp: trends?.revenue?.isUp ?? true },
-    { label: "New Vendors", value: summary.verifiedVendors || 0, icon: Store, color: "text-blue-600", trend: trends?.vendors?.value, isUp: trends?.vendors?.isUp ?? true },
-    { label: "Total Offerings", value: summary.totalProducts || 0, icon: Box, color: "text-purple-600" },
-    { label: "New Leads", value: summary.totalLeads || 0, icon: Send, color: "text-amber-600", trend: trends?.leads?.value, isUp: trends?.leads?.isUp ?? true },
+    { label: "Total Revenue", value: `₹${(summary.totalRevenue || 0).toLocaleString()}`, icon: Wallet, color: "text-emerald-600", trend: trends?.revenue?.value, isUp: trends?.revenue?.isUp ?? true, link: null },
+    { label: "New Vendors", value: summary.verifiedVendors || 0, icon: Store, color: "text-blue-600", trend: trends?.vendors?.value, isUp: trends?.vendors?.isUp ?? true, link: `/b2b-india/${role}/vendor-approvals` },
+    { label: "Total Offerings", value: summary.totalProducts || 0, icon: Box, color: "text-purple-600", link: `/b2b-india/${role}/offering-approvals` },
+    { label: "New Leads", value: summary.totalLeads || 0, icon: Send, color: "text-amber-600", trend: trends?.leads?.value, isUp: trends?.leads?.isUp ?? true, link: `/b2b-india/${role}/leads` },
   ];
 
   return (
@@ -128,7 +129,11 @@ export default function SuperAdminDashboard() {
         {/* METRICS ROW */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map((stat, i) => (
-            <div key={i} className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div 
+              key={i} 
+              onClick={() => stat.link && router.push(stat.link)}
+              className={`bg-white p-5 rounded-xl border border-gray-200 shadow-sm transition-shadow ${stat.link ? 'cursor-pointer hover:shadow-md hover:border-emerald-200' : ''}`}
+            >
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-gray-500">{stat.label}</p>
                 <stat.icon className={`w-5 h-5 ${stat.color}`} />
@@ -303,7 +308,12 @@ export default function SuperAdminDashboard() {
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col overflow-hidden">
               <div className="p-5 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-gray-900">Recent Activity</h3>
-                <button className="text-xs font-medium text-emerald-600 hover:text-emerald-700 transition-colors">View All</button>
+                <button 
+                  onClick={() => router.push(`/b2b-india/${role}/leads`)}
+                  className="text-xs font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+                >
+                  View All
+                </button>
               </div>
               <div className="flex-1 overflow-auto max-h-[350px]">
                 {recentLeads.length === 0 ? (
@@ -311,7 +321,11 @@ export default function SuperAdminDashboard() {
                 ) : (
                   <div className="divide-y divide-gray-50">
                     {recentLeads.slice(0, 6).map((lead: any, i: number) => (
-                      <div key={i} className="p-4 hover:bg-gray-50/50 transition-colors">
+                      <div 
+                        key={i} 
+                        onClick={() => router.push(`/b2b-india/${role}/leads?search=${encodeURIComponent(lead.buyerName || '')}`)}
+                        className="p-4 hover:bg-gray-50/50 transition-colors cursor-pointer"
+                      >
                         <p className="text-sm font-medium text-gray-900 mb-1 leading-tight">
                           New inquiry for {lead.productName || "Offering"}
                         </p>

@@ -45,7 +45,7 @@ export default function AdminSettings() {
   const [globalSettings, setGlobalSettings] = useState({
     websiteName: 'Admission Master',
     contactEmail: 'contact@example.com',
-    contactPhone: '+91 0000000000',
+    contactPhone: '0000000000',
     address: 'Your Address Here',
     facebookUrl: '',
     twitterUrl: '',
@@ -80,9 +80,14 @@ export default function AdminSettings() {
         });
       }
       if (globalData) {
+        const fetchedPhone = globalData.contactPhone 
+          ? globalData.contactPhone.replace(/\D/g, '').slice(-10) 
+          : '0000000000';
+          
         setGlobalSettings({
           ...globalSettings,
-          ...globalData
+          ...globalData,
+          contactPhone: fetchedPhone
         });
       }
     } catch (error) {
@@ -93,6 +98,44 @@ export default function AdminSettings() {
   };
 
   const handleSave = async () => {
+    if (activeTab === 'website') {
+      if (!globalSettings.websiteName || !globalSettings.websiteName.trim()) {
+        Swal.fire({ icon: 'error', title: 'Validation Error', text: 'Website Name is required.', confirmButtonColor: '#164e33' });
+        return;
+      }
+
+      if (globalSettings.contactEmail) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(globalSettings.contactEmail)) {
+          Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Please enter a valid email address.', confirmButtonColor: '#164e33' });
+          return;
+        }
+      }
+
+      if (globalSettings.contactPhone) {
+        if (globalSettings.contactPhone.length !== 10) {
+          Swal.fire({ icon: 'error', title: 'Invalid Phone Number', text: 'Phone number must be exactly 10 digits.', confirmButtonColor: '#164e33' });
+          return;
+        }
+      }
+
+      const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+      const socialLinks = [
+        { name: 'Facebook', value: globalSettings.facebookUrl },
+        { name: 'Twitter', value: globalSettings.twitterUrl },
+        { name: 'Instagram', value: globalSettings.instagramUrl },
+        { name: 'LinkedIn', value: globalSettings.linkedinUrl },
+        { name: 'YouTube', value: globalSettings.youtubeUrl },
+      ];
+
+      for (let link of socialLinks) {
+        if (link.value && !urlRegex.test(link.value)) {
+          Swal.fire({ icon: 'error', title: 'Invalid URL', text: `Please enter a valid URL for ${link.name}.`, confirmButtonColor: '#164e33' });
+          return;
+        }
+      }
+    }
+
     setSaving(true);
     try {
       if (activeTab === 'website') {
@@ -110,8 +153,8 @@ export default function AdminSettings() {
         icon: 'success',
         title: 'Saved!',
         text: 'Platform settings updated successfully.',
-        timer: 1500,
-        showConfirmButton: false
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#164e33'
       });
     } catch (error: any) {
       Swal.fire({
@@ -219,9 +262,13 @@ export default function AdminSettings() {
                     <div className="space-y-1.5">
                       <label className="text-sm font-medium text-gray-700">Contact Phone</label>
                       <input 
-                        type="text" 
+                        type="tel" 
+                        maxLength={10}
                         value={globalSettings.contactPhone}
-                        onChange={(e) => setGlobalSettings({...globalSettings, contactPhone: e.target.value})}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          setGlobalSettings({...globalSettings, contactPhone: val});
+                        }}
                         className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all shadow-sm"
                       />
                     </div>
@@ -345,7 +392,7 @@ export default function AdminSettings() {
                 <button 
                   onClick={handleSave}
                   disabled={saving}
-                  className="inline-flex justify-center items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex justify-center items-center gap-2 rounded-md bg-[#164e33] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#113f29] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#164e33] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {saving ? (
                     <RefreshCcw className="w-4 h-4 animate-spin" />

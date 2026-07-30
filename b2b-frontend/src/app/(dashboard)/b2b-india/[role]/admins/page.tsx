@@ -257,8 +257,8 @@ export default function AdminManagement() {
         icon: 'success',
         title: 'Success!',
         text: `Team member ${isUpdate ? 'updated' : 'added'} successfully.`,
-        timer: 2000,
-        showConfirmButton: false
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#164e33'
       });
     } catch (err: any) {
       setError(err.message || 'Failed to process request');
@@ -300,8 +300,8 @@ export default function AdminManagement() {
         icon: 'success',
         title: 'Deleted!',
         text: 'Team member has been removed.',
-        timer: 1500,
-        showConfirmButton: false
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#164e33'
       });
     }
   };

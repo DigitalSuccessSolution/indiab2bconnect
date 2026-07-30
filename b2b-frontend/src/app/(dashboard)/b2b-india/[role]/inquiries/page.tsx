@@ -103,8 +103,8 @@ export default function AdminInquiries() {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
+      confirmButtonColor: "#164e33",
+      cancelButtonColor: "#ef4444",
       confirmButtonText: "Yes, delete it!",
       showLoaderOnConfirm: true,
       preConfirm: async () => {
@@ -121,7 +121,7 @@ export default function AdminInquiries() {
     });
 
     if (result.isConfirmed) {
-      Swal.fire("Deleted!", "Inquiry has been deleted.", "success");
+      Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Inquiry has been deleted.', confirmButtonText: 'OK', confirmButtonColor: '#164e33' });
       setInquiries(inquiries.filter((inq) => inq.id !== id));
       setTotalCount((prev) => prev - 1);
     }

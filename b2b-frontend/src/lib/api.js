@@ -60,13 +60,8 @@ export const apiFetch = async (endpoint, options = {}) => {
               } else {
                 isRefreshing = false;
                 localStorage.removeItem('token');
-                document.cookie = "userRole=loggedout; path=/;";
                 if (typeof window !== 'undefined') {
-                  if (window.location.pathname.startsWith('/b2b-india')) {
-                    window.location.href = '/secure-login';
-                  } else {
-                    window.location.href = '/login';
-                  }
+                  window.dispatchEvent(new CustomEvent('sessionExpired'));
                 }
                 throw new Error('Session expired. Please login again.');
               }

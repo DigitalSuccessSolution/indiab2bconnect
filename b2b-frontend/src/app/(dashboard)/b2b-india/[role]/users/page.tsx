@@ -101,7 +101,7 @@ export default function AdminUsers() {
             : u,
         ),
       );
-      Swal.fire({ icon: 'success', title: 'Success!', text: 'User updated successfully.', timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: 'success', title: 'Success!', text: 'User updated successfully.', confirmButtonText: 'OK', confirmButtonColor: '#164e33' });
       setIsModalOpen(false);
       setSelectedUser(null);
     } catch (error) {
@@ -119,7 +119,7 @@ export default function AdminUsers() {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#164e33',
-      cancelButtonColor: '#d33',
+      cancelButtonColor: '#ef4444',
       confirmButtonText: 'Yes, delete it!',
       showLoaderOnConfirm: true,
       preConfirm: async () => {
@@ -136,7 +136,7 @@ export default function AdminUsers() {
 
     if (result.isConfirmed) {
       setUsers(users.filter((u) => u.id !== user.id));
-      Swal.fire({ icon: 'success', title: 'Deleted!', text: 'User has been removed.', timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: 'success', title: 'Deleted!', text: 'User has been removed.', confirmButtonText: 'OK', confirmButtonColor: '#164e33' });
     }
   };
 

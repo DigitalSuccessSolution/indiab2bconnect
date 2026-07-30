@@ -121,13 +121,13 @@ export default function SuperAdminLeads() {
         method: "PATCH",
         body: JSON.stringify({ vendorId }),
       });
-      Swal.fire({ icon: 'success', title: 'Assigned!', text: 'Lead has been successfully assigned.', timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: 'success', title: 'Assigned!', text: 'Lead has been successfully assigned.', confirmButtonColor: '#164e33' });
       setIsDetailOpen(false);
       setSelectedLead(null);
       await fetchLeads();
     } catch (error) {
       console.error("Failed to assign lead:", error);
-      Swal.fire({ icon: 'error', title: 'Failed', text: 'Could not assign lead.' });
+      Swal.fire({ icon: 'error', title: 'Failed', text: 'Could not assign lead.', confirmButtonColor: '#164e33' });
     } finally {
       setAssigning(null);
     }
@@ -139,13 +139,13 @@ export default function SuperAdminLeads() {
         method: "PATCH",
         body: JSON.stringify({ status }),
       });
-      Swal.fire({ icon: 'success', title: 'Success', text: `Lead marked as ${status}.`, timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: 'success', title: 'Success', text: `Lead marked as ${status}.`, confirmButtonColor: '#164e33' });
       setIsDetailOpen(false);
       setSelectedLead(null);
       await fetchLeads();
     } catch (error) {
       console.error("Failed to update status:", error);
-      Swal.fire({ icon: 'error', title: 'Failed', text: 'Could not update status.' });
+      Swal.fire({ icon: 'error', title: 'Failed', text: 'Could not update status.', confirmButtonColor: '#164e33' });
     }
   };
 
@@ -158,7 +158,8 @@ export default function SuperAdminLeads() {
       lead.category?.name?.toLowerCase().includes(searchLow) ||
       lead.city?.toLowerCase().includes(searchLow);
 
-    const matchesStatus = statusFilter === "ALL" || lead.status === statusFilter;
+    const effectiveStatus = (lead.status === "DISTRIBUTED" && !lead.vendor) ? "PENDING" : lead.status;
+    const matchesStatus = statusFilter === "ALL" || effectiveStatus === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
@@ -236,7 +237,14 @@ export default function SuperAdminLeads() {
                 ))
               ) : filteredLeads.length > 0 ? (
                 filteredLeads.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
+                  <tr 
+                    key={lead.id} 
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => {
+                      setSelectedLead(lead);
+                      setIsDetailOpen(true);
+                    }}
+                  >
                     <td className="px-6 py-4 whitespace-normal break-words max-w-xs">
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-900">
@@ -260,17 +268,22 @@ export default function SuperAdminLeads() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        lead.status === "PENDING"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : lead.status === "DISTRIBUTED"
-                            ? "bg-blue-100 text-blue-800"
-                            : lead.status === "EXPIRED"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-green-100 text-green-800"
-                      }`}>
-                        {lead.status === "PENDING" ? "Pending" : lead.status === "DISTRIBUTED" ? "Assigned" : lead.status === "EXPIRED" ? "Expired" : "Completed"}
-                      </span>
+                      {(() => {
+                        const effectiveStatus = (lead.status === "DISTRIBUTED" && !lead.vendor) ? "PENDING" : lead.status;
+                        return (
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            effectiveStatus === "PENDING"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : effectiveStatus === "DISTRIBUTED"
+                                ? "bg-blue-100 text-blue-800"
+                                : effectiveStatus === "EXPIRED"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-green-100 text-green-800"
+                          }`}>
+                            {effectiveStatus === "PENDING" ? "Pending" : effectiveStatus === "DISTRIBUTED" ? "Assigned" : effectiveStatus === "EXPIRED" ? "Expired" : "Completed"}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4">
                       {lead.vendor ? (
@@ -285,7 +298,8 @@ export default function SuperAdminLeads() {
                     <td className="px-6 py-4 text-right">
                       {(canUpdate || canReassign) && (
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setSelectedLead(lead);
                             setIsDetailOpen(true);
                           }}

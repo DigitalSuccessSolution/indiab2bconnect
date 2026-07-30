@@ -399,20 +399,47 @@ exports.getAllLeads = catchAsync(async (req, res, next) => {
   const { id, role: userRole } = req.user;
 
   const cacheContext = userRole === "SUPERADMIN" ? "global" : id;
-  const cacheKey = `admin:leads:all:${JSON.stringify(req.query)}:${cacheContext}`;
+  const cacheKey = `admin:leads:v2:all:${JSON.stringify(req.query)}:${cacheContext}`;
   let cachedData = await cacheService.getCache(cacheKey);
   if (cachedData) return res.status(200).json(new ApiResponse(200, cachedData));
 
   const where = {};
-  if (status && status !== "ALL") where.status = status;
+  
+  if (status && status !== "ALL") {
+    if (status === "PENDING") {
+      where.OR = [
+        { status: "PENDING" },
+        { status: "DISTRIBUTED", vendorId: null }
+      ];
+    } else if (status === "DISTRIBUTED") {
+      where.status = "DISTRIBUTED";
+      where.vendorId = { not: null };
+    } else {
+      where.status = status;
+    }
+  }
+
   if (city) where.city = { contains: city, mode: "insensitive" };
   if (categoryId) where.categoryId = categoryId;
 
   if (search) {
-    where.OR = [
-      { requesterName: { contains: search, mode: "insensitive" } },
-      { requesterPhone: { contains: search, mode: "insensitive" } }
-    ];
+    const searchCondition = {
+      OR: [
+        { buyerName: { contains: search, mode: "insensitive" } },
+        { phone: { contains: search, mode: "insensitive" } },
+        { searchKeyword: { contains: search, mode: "insensitive" } }
+      ]
+    };
+    if (where.OR) {
+      // If we already have an OR (from status === PENDING), we need to use AND to combine them
+      where.AND = [
+        { OR: where.OR },
+        searchCondition
+      ];
+      delete where.OR;
+    } else {
+      where.OR = searchCondition.OR;
+    }
   }
 
   if (timeRange && timeRange !== "ALL") {

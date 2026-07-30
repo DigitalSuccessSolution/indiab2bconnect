@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import {
   Users,
@@ -24,6 +25,10 @@ import {
 const COLORS = ['#10b981', '#3b82f6', '#f58220', '#a855f7', '#64748b'];
 
 export default function SuperAdminAnalytics() {
+  const params = useParams();
+  const router = useRouter();
+  const role = (params?.role as string) || '';
+
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('monthly');
@@ -120,10 +125,10 @@ export default function SuperAdminAnalytics() {
 
   // Hero Tabs definition
   const metrics = [
-    { id: 'revenue', label: 'Gross Revenue', value: `₹${stats?.totalRevenue || 0}`, icon: Wallet, trend: stats?.trends?.revenue?.value || '0.0%', trendUp: stats?.trends?.revenue?.isUp ?? true },
-    { id: 'vendors', label: 'New Vendors', value: stats?.verifiedVendors || 0, icon: Users, trend: stats?.trends?.vendors?.value || '0.0%', trendUp: stats?.trends?.vendors?.isUp ?? true },
-    { id: 'leads', label: 'New Leads', value: totalLeads, icon: Target, trend: stats?.trends?.leads?.value || '0.0%', trendUp: stats?.trends?.leads?.isUp ?? true },
-    { id: 'conversion', label: 'Conversion Rate', value: `${conversionRate}%`, icon: Activity, trend: stats?.trends?.conversion?.value || '0.0%', trendUp: stats?.trends?.conversion?.isUp ?? true },
+    { id: 'revenue', label: 'Gross Revenue', value: `₹${stats?.totalRevenue || 0}`, icon: Wallet, trend: stats?.trends?.revenue?.value || '0.0%', trendUp: stats?.trends?.revenue?.isUp ?? true, link: null },
+    { id: 'vendors', label: 'New Vendors', value: stats?.verifiedVendors || 0, icon: Users, trend: stats?.trends?.vendors?.value || '0.0%', trendUp: stats?.trends?.vendors?.isUp ?? true, link: `/b2b-india/${role}/vendor-approvals` },
+    { id: 'leads', label: 'New Leads', value: totalLeads, icon: Target, trend: stats?.trends?.leads?.value || '0.0%', trendUp: stats?.trends?.leads?.isUp ?? true, link: `/b2b-india/${role}/leads` },
+    { id: 'conversion', label: 'Conversion Rate', value: `${conversionRate}%`, icon: Activity, trend: stats?.trends?.conversion?.value || '0.0%', trendUp: stats?.trends?.conversion?.isUp ?? true, link: null },
   ];
 
 
@@ -181,7 +186,8 @@ export default function SuperAdminAnalytics() {
             return (
               <div
                 key={metric.id}
-                className="relative p-5 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group"
+                onClick={() => metric.link && router.push(metric.link)}
+                className={`relative p-5 rounded-2xl bg-white border border-gray-200 shadow-sm transition-shadow overflow-hidden group ${metric.link ? 'cursor-pointer hover:shadow-md hover:border-emerald-200' : ''}`}
               >
                 {/* Subtle gradient background effect on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent to-gray-50/50 opacity-0 group-hover:opacity-100 transition-opacity" />

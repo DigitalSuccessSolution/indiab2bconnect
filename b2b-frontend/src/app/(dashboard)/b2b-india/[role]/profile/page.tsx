@@ -66,6 +66,16 @@ export default function AdminProfile() {
 
    const handleUpdate = async (e: React.FormEvent) => {
       e.preventDefault();
+
+      if (formData.phone && formData.phone.length !== 10) {
+         Swal.fire({
+            icon: 'error',
+            title: 'Invalid Phone Number',
+            text: 'Phone number must be exactly 10 digits.'
+         });
+         return;
+      }
+
       setSaving(true);
       try {
          await apiFetch('/auth/profile', {
@@ -80,8 +90,8 @@ export default function AdminProfile() {
             icon: 'success',
             title: 'Success!',
             text: 'Profile updated successfully.',
-            timer: 1500,
-            showConfirmButton: false
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#164e33'
          });
          setFormData(prev => ({ ...prev, password: '' }));
          await refreshUser();
@@ -114,8 +124,8 @@ export default function AdminProfile() {
             icon: 'success',
             title: 'Success!',
             text: 'Profile image updated successfully.',
-            timer: 1500,
-            showConfirmButton: false
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#164e33'
          });
          await refreshUser();
       } catch (error: any) {
@@ -132,7 +142,7 @@ export default function AdminProfile() {
 
    const handleRequestEmailOTP = async () => {
       if (!newEmail || newEmail === user?.email) {
-         Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Please enter a valid new email address.' });
+         Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Please enter a valid new email address.', confirmButtonColor: '#164e33' });
          return;
       }
       setModalLoading(true);
@@ -144,9 +154,9 @@ export default function AdminProfile() {
          setOtpSent(true);
          setTimer(60); // Start 60 second countdown
          setCanResend(false);
-         Swal.fire({ icon: 'success', title: 'OTP Sent', text: 'Please check your new email for the OTP.' });
+         Swal.fire({ icon: 'success', title: 'OTP Sent', text: 'Please check your new email for the OTP.', confirmButtonColor: '#164e33' });
       } catch (error: any) {
-         Swal.fire({ icon: 'error', title: 'Failed', text: error.message || 'Failed to send OTP.' });
+         Swal.fire({ icon: 'error', title: 'Failed', text: error.message || 'Failed to send OTP.', confirmButtonColor: '#164e33' });
       } finally {
          setModalLoading(false);
       }
@@ -154,7 +164,7 @@ export default function AdminProfile() {
 
    const handleVerifyEmailOTP = async () => {
       if (!otp) {
-         Swal.fire({ icon: 'error', title: 'Invalid OTP', text: 'Please enter the OTP.' });
+         Swal.fire({ icon: 'error', title: 'Invalid OTP', text: 'Please enter the OTP.', confirmButtonColor: '#164e33' });
          return;
       }
       setModalLoading(true);
@@ -163,14 +173,14 @@ export default function AdminProfile() {
             method: 'POST',
             body: JSON.stringify({ otp })
          });
-         Swal.fire({ icon: 'success', title: 'Success!', text: 'Email updated successfully.' });
+         Swal.fire({ icon: 'success', title: 'Success!', text: 'Email updated successfully.', confirmButtonColor: '#164e33' });
          setIsEmailModalOpen(false);
          setOtp('');
          setNewEmail('');
          setOtpSent(false);
          await refreshUser();
       } catch (error: any) {
-         Swal.fire({ icon: 'error', title: 'Failed', text: error.message || 'Invalid OTP.' });
+         Swal.fire({ icon: 'error', title: 'Failed', text: error.message || 'Invalid OTP.', confirmButtonColor: '#164e33' });
       } finally {
          setModalLoading(false);
       }
@@ -279,9 +289,10 @@ export default function AdminProfile() {
                      <input
                         type="tel"
                         value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
+                        maxLength={10}
                         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#164e33] focus:border-[#164e33] outline-none transition-all"
-                        placeholder="Enter phone number"
+                        placeholder="Enter 10-digit phone number"
                      />
                   </div>
 

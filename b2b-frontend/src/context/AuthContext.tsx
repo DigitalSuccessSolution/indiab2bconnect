@@ -46,6 +46,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } else {
       setLoading(false);
     }
+
+    const handleSessionExpired = () => {
+      logout();
+    };
+    window.addEventListener('sessionExpired', handleSessionExpired);
+    
+    return () => {
+      window.removeEventListener('sessionExpired', handleSessionExpired);
+    };
   }, []);
 
   const fetchUserData = async (activeToken: string) => {
@@ -56,10 +65,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(data.data);
     } catch (error) {
       console.error('Auth check failed:', error);
-      // Only logout if error is not token expired (which apiFetch handles by redirecting)
-      if (error instanceof Error && error.message !== 'TOKEN_EXPIRED' && error.message !== 'Session expired. Please login again.') {
-        logout();
-      }
+      // Remove the manual check here because apiFetch will dispatch sessionExpired event
+      // if token refresh fails, which will trigger logout() globally.
     } finally {
       setLoading(false);
     }
@@ -100,7 +107,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     setUser(null);
     
-    if (userRole === 'VENDOR') {
+    if (window.location.pathname.startsWith('/b2b-india')) {
+      router.push('/secure-login');
+    } else if (userRole === 'VENDOR') {
       router.push('/sell');
     } else {
       router.push('/');

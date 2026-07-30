@@ -64,7 +64,7 @@ export default function AdminCategories() {
       });
       setCategories([...categories, data.data]);
       setNewCatName('');
-      Swal.fire({ icon: 'success', title: 'Success!', text: 'Category added successfully.', timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: 'success', title: 'Success!', text: 'Category added successfully.', confirmButtonText: 'OK', confirmButtonColor: '#164e33' });
     } catch (error) {
       Swal.fire({ icon: 'error', title: 'Failed', text: 'Failed to add category. Please try again.' });
     } finally {
@@ -82,7 +82,7 @@ export default function AdminCategories() {
         body: JSON.stringify({ name: editingCategory.name, isActive: editingCategory.isActive })
       });
       setCategories(categories.map(c => c.id === editingCategory.id ? data.data : c));
-      Swal.fire({ icon: 'success', title: 'Updated!', text: 'Category updated successfully.', timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: 'success', title: 'Updated!', text: 'Category updated successfully.', confirmButtonText: 'OK', confirmButtonColor: '#164e33' });
       setIsEditModalOpen(false);
       setEditingCategory(null);
     } catch (error) {
@@ -109,8 +109,8 @@ export default function AdminCategories() {
       text: "This action will remove the category permanently.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      confirmButtonColor: '#164e33',
+      cancelButtonColor: '#ef4444',
       confirmButtonText: 'Yes, delete it!',
       showLoaderOnConfirm: true,
       preConfirm: async () => {
@@ -127,7 +127,7 @@ export default function AdminCategories() {
 
     if (result.isConfirmed) {
       setCategories(categories.filter(c => c.id !== id));
-      Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Category removed successfully.', timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Category removed successfully.', confirmButtonText: 'OK', confirmButtonColor: '#164e33' });
     }
   };
 

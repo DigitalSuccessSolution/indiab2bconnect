@@ -156,8 +156,8 @@ export default function VendorApprovals() {
         icon: 'success',
         title: 'Success!',
         text: `Vendor application ${action === "APPROVE" ? "approved" : "rejected"} successfully.`,
-        timer: 1500,
-        showConfirmButton: false
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#164e33'
       });
       fetchVendors();
       setIsDetailOpen(false);
@@ -171,8 +171,8 @@ export default function VendorApprovals() {
       text: "You won't be able to revert this!",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6b7280',
+      confirmButtonColor: '#164e33',
+      cancelButtonColor: '#ef4444',
       confirmButtonText: 'Yes, delete it!',
       showLoaderOnConfirm: true,
       preConfirm: async () => {
@@ -188,7 +188,7 @@ export default function VendorApprovals() {
     });
 
     if (result.isConfirmed) {
-      Swal.fire('Deleted!', 'The vendor has been deleted.', 'success');
+      Swal.fire({ title: 'Deleted!', text: 'The vendor has been deleted.', icon: 'success', confirmButtonColor: '#164e33' });
       setVendors(prev => prev.filter(v => v.id !== id));
       fetchVendors();
     }
@@ -216,17 +216,30 @@ export default function VendorApprovals() {
   };
 
   const submitEdit = async () => {
+    if (editForm.phone && editForm.phone.length !== 10) {
+      Swal.fire({ title: 'Validation Error', text: 'Phone number must be exactly 10 digits.', icon: 'error', confirmButtonColor: '#164e33' });
+      return;
+    }
+    if (editForm.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editForm.email)) {
+      Swal.fire({ title: 'Validation Error', text: 'Please enter a valid email address.', icon: 'error', confirmButtonColor: '#164e33' });
+      return;
+    }
+    if (editForm.aadhaarNumber && editForm.aadhaarNumber.length !== 12) {
+      Swal.fire({ title: 'Validation Error', text: 'Aadhaar number must be exactly 12 digits.', icon: 'error', confirmButtonColor: '#164e33' });
+      return;
+    }
+
     setProcessingId("EDITING");
     try {
       await apiFetch(`/admin/vendors/${selectedVendor.id}`, {
         method: "PATCH",
         body: JSON.stringify(editForm),
       });
-      Swal.fire('Updated!', 'Vendor details have been updated.', 'success');
+      Swal.fire({ title: 'Updated!', text: 'Vendor details have been updated.', icon: 'success', confirmButtonColor: '#164e33' });
       setIsEditOpen(false);
       fetchVendors();
     } catch (error: any) {
-      Swal.fire('Error', error.message || 'Failed to update vendor', 'error');
+      Swal.fire({ title: 'Error', text: error.message || 'Failed to update vendor', icon: 'error', confirmButtonColor: '#164e33' });
     } finally {
       setProcessingId(null);
     }
@@ -240,11 +253,11 @@ export default function VendorApprovals() {
         method: "PATCH",
         body: JSON.stringify({ boostScore: Number(boostInput) }),
       });
-      Swal.fire('Boost Applied!', `Vendor has been boosted by ${boostInput} points.`, 'success');
+      Swal.fire({ title: 'Boost Applied!', text: `Vendor has been boosted by ${boostInput} points.`, icon: 'success', confirmButtonColor: '#164e33' });
       setIsBoostOpen(false);
       fetchVendors();
     } catch (error: any) {
-      Swal.fire('Error', error.message || 'Failed to apply boost', 'error');
+      Swal.fire({ title: 'Error', text: error.message || 'Failed to apply boost', icon: 'error', confirmButtonColor: '#164e33' });
     } finally {
       setProcessingId(null);
     }
@@ -271,7 +284,7 @@ export default function VendorApprovals() {
         }));
       }
     } catch (error: any) {
-      Swal.fire('Error', error.message || 'File upload failed', 'error');
+      Swal.fire({ title: 'Error', text: error.message || 'File upload failed', icon: 'error', confirmButtonColor: '#164e33' });
     } finally {
       setProcessingId(null);
       e.target.value = '';
@@ -400,7 +413,15 @@ export default function VendorApprovals() {
                   ))
                 ) : vendors.length > 0 ? (
                   vendors.map((vendor) => (
-                    <tr key={vendor.id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr 
+                      key={vendor.id} 
+                      className="hover:bg-gray-50/50 transition-colors cursor-pointer"
+                      onClick={() => {
+                        setSelectedVendor(vendor);
+                        setRejectionReasonInput("");
+                        setIsDetailOpen(true);
+                      }}
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center shrink-0 text-gray-400 font-bold">
@@ -446,7 +467,8 @@ export default function VendorApprovals() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-3">
                           <button
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setSelectedVendor(vendor);
                               setRejectionReasonInput("");
                               setIsDetailOpen(true);
@@ -458,7 +480,8 @@ export default function VendorApprovals() {
                           </button>
                           {canEdit && (
                             <button
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setSelectedVendor(vendor);
                                 setBoostInput(vendor.manualBoost || 0);
                                 setIsBoostOpen(true);
@@ -471,7 +494,10 @@ export default function VendorApprovals() {
                           )}
                           {canEdit && (
                             <button
-                              onClick={() => handleEdit(vendor)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(vendor);
+                              }}
                               title="Edit"
                               className="text-gray-400 hover:text-blue-600 transition-colors"
                             >
@@ -480,7 +506,10 @@ export default function VendorApprovals() {
                           )}
                           {canDelete && (
                             <button
-                              onClick={() => handleDelete(vendor.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(vendor.id);
+                              }}
                               title="Delete"
                               className="text-gray-400 hover:text-red-600 transition-colors"
                             >
@@ -800,7 +829,8 @@ export default function VendorApprovals() {
                     <input
                       type="text"
                       value={editForm.phone}
-                      onChange={(e) => setEditForm({...editForm, phone: e.target.value})}
+                      onChange={(e) => setEditForm({...editForm, phone: e.target.value.replace(/\D/g, '').slice(0, 10)})}
+                      maxLength={10}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>
@@ -840,7 +870,8 @@ export default function VendorApprovals() {
                     <input
                       type="text"
                       value={editForm.aadhaarNumber}
-                      onChange={(e) => setEditForm({...editForm, aadhaarNumber: e.target.value})}
+                      onChange={(e) => setEditForm({...editForm, aadhaarNumber: e.target.value.replace(/\D/g, '').slice(0, 12)})}
+                      maxLength={12}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>
@@ -850,7 +881,7 @@ export default function VendorApprovals() {
                     <input
                       type="email"
                       value={editForm.email}
-                      onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                      onChange={(e) => setEditForm({...editForm, email: e.target.value.trim()})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>

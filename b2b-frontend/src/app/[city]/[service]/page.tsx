@@ -22,9 +22,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+import { notFound } from "next/navigation";
+
 export default async function DynamicSearchPageNoId({ params }: Props) {
   const resolvedParams = await params;
   const { city, service } = resolvedParams;
+
+  // Fix Next.js routing collision with dashboard routes
+  if (city === 'b2b-india' || city === 'vendor') {
+    notFound();
+  }
 
   const decodedCity = decodeURIComponent(city).replace(/-/g, ' ');
   const decodedService = decodeURIComponent(service).replace(/-/g, ' ');

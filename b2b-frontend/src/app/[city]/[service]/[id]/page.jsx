@@ -4,6 +4,8 @@ import React, { Suspense } from "react";
 import { SearchPageContent } from "@/app/search/page";
 import { Loader2 } from "lucide-react";
 
+import { notFound } from "next/navigation";
+
 export default function DynamicSearchPage({ params }) {
   // Unwrap params if they are a promise (Next.js 15+ behavior)
   const resolvedParams = React.use(params);
@@ -13,6 +15,11 @@ export default function DynamicSearchPage({ params }) {
   const decodedCity = decodeURIComponent(city).replace(/-/g, ' ');
   const decodedService = decodeURIComponent(service).replace(/-/g, ' ');
   
+  // Fix Next.js routing collision with dashboard routes
+  if (city === 'b2b-india' || city === 'vendor') {
+    notFound();
+  }
+
   // Logic to separate Query and Area if "-in-" is present in the service slug
   // Pattern used in generateDiscoveryUrl: query-in-area
   const q = decodedService.split(' in ')[0]; 

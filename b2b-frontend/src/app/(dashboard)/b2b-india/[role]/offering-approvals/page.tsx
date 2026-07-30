@@ -112,7 +112,7 @@ export default function OfferingApprovals() {
     });
 
     if (result.isConfirmed) {
-      Swal.fire('Deleted!', 'The offering has been deleted.', 'success');
+      Swal.fire({ title: 'Deleted!', text: 'The offering has been deleted.', icon: 'success', confirmButtonColor: '#164e33' });
       setOfferings(prev => prev.filter(o => o.id !== id));
       if (selectedOffering?.id === id) setIsDetailOpen(false);
       fetchOfferings();
@@ -152,11 +152,11 @@ export default function OfferingApprovals() {
     const finalMoq = Number(editForm.moq);
 
     if (isNaN(finalPrice) || finalPrice < 0) {
-      Swal.fire('Error', 'Price must be a valid number and cannot be negative.', 'error');
+      Swal.fire({ title: 'Error', text: 'Price must be a valid number and cannot be negative.', icon: 'error', confirmButtonColor: '#164e33' });
       return;
     }
     if (isNaN(finalMoq) || finalMoq < 1) {
-      Swal.fire('Error', 'Minimum Order Quantity must be at least 1.', 'error');
+      Swal.fire({ title: 'Error', text: 'Minimum Order Quantity must be at least 1.', icon: 'error', confirmButtonColor: '#164e33' });
       return;
     }
 
@@ -173,13 +173,13 @@ export default function OfferingApprovals() {
         method: "PATCH",
         body: JSON.stringify(payload),
       });
-      Swal.fire('Updated!', 'Offering updated successfully.', 'success');
+      Swal.fire({ title: 'Updated!', text: 'Offering updated successfully.', icon: 'success', confirmButtonColor: '#164e33' });
       setIsEditOpen(false);
       setOfferings(prev => prev.map(o => o.id === selectedOffering.id ? { ...o, ...payload } : o));
       if (selectedOffering) setSelectedOffering({ ...selectedOffering, ...payload });
       fetchOfferings();
     } catch (error: any) {
-      Swal.fire('Error', error.message || 'Failed to update', 'error');
+      Swal.fire({ title: 'Error', text: error.message || 'Failed to update', icon: 'error', confirmButtonColor: '#164e33' });
     } finally {
       setProcessingId(null);
     }
@@ -206,7 +206,7 @@ export default function OfferingApprovals() {
         }));
       }
     } catch (error: any) {
-      Swal.fire('Error', error.message || 'Image upload failed', 'error');
+      Swal.fire({ title: 'Error', text: error.message || 'Image upload failed', icon: 'error', confirmButtonColor: '#164e33' });
     } finally {
       setProcessingId(null);
       e.target.value = '';

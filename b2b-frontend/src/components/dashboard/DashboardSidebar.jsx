@@ -127,9 +127,14 @@ export default function DashboardSidebar({
                 {userRole === "SUPERADMIN" ? "SA" : userRole === "SUBADMIN" ? "S-A" : "AD"}
               </div>
             ) : (
-              <span className="text-white font-semibold text-sm tracking-wider uppercase">
-                {userRole === "SUPERADMIN" ? "SUPER ADMIN" : userRole === "SUBADMIN" ? "SUB ADMIN" : "ADMIN PANEL"}
-              </span>
+              <div className="flex flex-col">
+                <span className="text-white font-semibold text-sm tracking-wider uppercase">
+                  INDIA B2B CONNECT
+                </span>
+                <span className="text-white/70 font-medium text-[10px] tracking-widest uppercase mt-0.5">
+                  {userRole === "SUPERADMIN" ? "SUPER ADMIN" : userRole === "SUBADMIN" ? "SUB ADMIN" : "ADMIN PANEL"}
+                </span>
+              </div>
             )}
           </Link>
 

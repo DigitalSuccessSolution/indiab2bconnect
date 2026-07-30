@@ -172,6 +172,28 @@ export default function DashboardLayout({
     );
   }
 
+  const getPageTitle = () => {
+    if (!pathname) return "Dashboard";
+    const segments = pathname.split('/').filter(Boolean);
+    const lastSegment = segments[segments.length - 1];
+    
+    if (!lastSegment || ['b2b-india', 'super-admin', 'admin', 'subadmin', 'vendor'].includes(lastSegment)) {
+       return "Dashboard";
+    }
+    
+    switch(lastSegment) {
+      case 'vendor-approvals': return "Vendor Approvals";
+      case 'packages': return "Membership Tiers";
+      case 'inquiries': return "Contact Inquiries";
+      case 'users': return "Team Management";
+      case 'leads': return "Leads Management";
+      case 'settings': return "Settings";
+      case 'categories': return "Categories";
+      case 'profile': return "My Profile";
+      default: return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fcfcfc] text-slate-900 flex font-sans antialiased">
       {globalToast && (
@@ -221,8 +243,8 @@ export default function DashboardLayout({
             </button>
 
             <div className="shrink-0 flex items-center">
-              <span className="text-xl font-semibold text-gray-900 tracking-tight">
-                INDIA B2B CONNECT
+              <span className="text-xl font-semibold text-gray-900 tracking-tight capitalize">
+                {getPageTitle()}
               </span>
             </div>
           </div>
