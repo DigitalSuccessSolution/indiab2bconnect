@@ -191,9 +191,6 @@ const Footer = () => {
                 © {new Date().getFullYear()} {settings.websiteName}. All rights
                 reserved.
               </p>
-              <p className="text-[10px] sm:text-[11px] font-normal text-white/50">
-                Designed and developed by <a href="https://digitalsuccesssolutions.in/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-[#FF4F00] transition-colors underline underline-offset-2">Digital Success Solutions</a>
-              </p>
             </div>
             <div className="flex items-center justify-center flex-wrap gap-4 md:gap-8 pt-2 md:pt-0">
 
