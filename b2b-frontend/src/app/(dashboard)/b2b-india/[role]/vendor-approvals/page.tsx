@@ -22,21 +22,22 @@ import Swal from "sweetalert2";
 
 export default function VendorApprovals() {
   const { hasPermission } = useAuth();
-  
+
   const canEdit = hasPermission('vendors_update');
   const canDelete = hasPermission('vendors_delete');
   const canApprove = hasPermission('vendors_approve');
   const canReject = hasPermission('vendors_reject');
+  const hasActions = canEdit || canDelete || canApprove || canReject;
 
   const [vendors, setVendors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [city, setCity] = useState("All Cities");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
   const [timeRange, setTimeRange] = useState("ALL");
-  
+
   const [cities, setCities] = useState<string[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
 
@@ -50,7 +51,7 @@ export default function VendorApprovals() {
   const [editForm, setEditForm] = useState<any>({});
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [rejectionReasonInput, setRejectionReasonInput] = useState("");
-  
+
   // Manual Boost State
   const [isBoostOpen, setIsBoostOpen] = useState(false);
   const [boostInput, setBoostInput] = useState<number | "">(0);
@@ -95,7 +96,7 @@ export default function VendorApprovals() {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      params.append("status", statusFilter); 
+      params.append("status", statusFilter);
       params.append("page", page.toString());
       params.append("limit", limit.toString());
       if (searchTerm) params.append("search", searchTerm);
@@ -122,7 +123,7 @@ export default function VendorApprovals() {
     let reason = predefinedReason || "";
 
     const actionText = action === "APPROVE" ? "approve" : "reject";
-    
+
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: `You want to ${actionText} this vendor application?`,
@@ -137,9 +138,9 @@ export default function VendorApprovals() {
           if (action === "APPROVE") {
             await apiFetch(`/admin/vendors/${id}/approve`, { method: "PATCH" });
           } else {
-            await apiFetch(`/admin/vendors/${id}/reject`, { 
+            await apiFetch(`/admin/vendors/${id}/reject`, {
               method: "DELETE",
-              body: JSON.stringify({ reason }) 
+              body: JSON.stringify({ reason })
             });
           }
           return true;
@@ -401,7 +402,7 @@ export default function VendorApprovals() {
                   <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Location</th>
                   <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Applied On</th>
-                  <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                  {hasActions && <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -413,8 +414,8 @@ export default function VendorApprovals() {
                   ))
                 ) : vendors.length > 0 ? (
                   vendors.map((vendor) => (
-                    <tr 
-                      key={vendor.id} 
+                    <tr
+                      key={vendor.id}
                       className="hover:bg-gray-50/50 transition-colors cursor-pointer"
                       onClick={() => {
                         setSelectedVendor(vendor);
@@ -450,13 +451,12 @@ export default function VendorApprovals() {
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
-                            vendor.status === "PENDING"
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${vendor.status === "PENDING"
                               ? "bg-amber-50 text-amber-700 border-amber-200"
                               : vendor.status === "VERIFIED"
-                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                              : "bg-red-50 text-red-700 border-red-200"
-                          }`}
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-red-50 text-red-700 border-red-200"
+                            }`}
                         >
                           {vendor.status === "VERIFIED" ? "Verified" : vendor.status === "REJECTED" ? "Rejected" : "Pending Review"}
                         </span>
@@ -464,60 +464,62 @@ export default function VendorApprovals() {
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {new Date(vendor.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-3">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedVendor(vendor);
-                              setRejectionReasonInput("");
-                              setIsDetailOpen(true);
-                            }}
-                            title="View Details"
-                            className="text-gray-400 hover:text-[#164e33] transition-colors"
-                          >
-                            <Eye size={18} />
-                          </button>
-                          {canEdit && (
+                      {hasActions && (
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-3">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedVendor(vendor);
-                                setBoostInput(vendor.manualBoost || 0);
-                                setIsBoostOpen(true);
+                                setRejectionReasonInput("");
+                                setIsDetailOpen(true);
                               }}
-                              title="Manual Boost"
-                              className="text-gray-400 hover:text-yellow-600 transition-colors"
+                              title="View Details"
+                              className="text-gray-400 hover:text-[#164e33] transition-colors"
                             >
-                              <TrendingUp size={18} />
+                              <Eye size={18} />
                             </button>
-                          )}
-                          {canEdit && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit(vendor);
-                              }}
-                              title="Edit"
-                              className="text-gray-400 hover:text-blue-600 transition-colors"
-                            >
-                              <Edit2 size={18} />
-                            </button>
-                          )}
-                          {canDelete && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(vendor.id);
-                              }}
-                              title="Delete"
-                              className="text-gray-400 hover:text-red-600 transition-colors"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          )}
-                        </div>
-                      </td>
+                            {canEdit && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedVendor(vendor);
+                                  setBoostInput(vendor.manualBoost || 0);
+                                  setIsBoostOpen(true);
+                                }}
+                                title="Manual Boost"
+                                className="text-gray-400 hover:text-yellow-600 transition-colors"
+                              >
+                                <TrendingUp size={18} />
+                              </button>
+                            )}
+                            {canEdit && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEdit(vendor);
+                                }}
+                                title="Edit"
+                                className="text-gray-400 hover:text-blue-600 transition-colors"
+                              >
+                                <Edit2 size={18} />
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(vendor.id);
+                                }}
+                                title="Delete"
+                                className="text-gray-400 hover:text-red-600 transition-colors"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (
@@ -556,11 +558,10 @@ export default function VendorApprovals() {
                     <button
                       key={p}
                       onClick={() => setPage(p)}
-                      className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
-                        page === p
+                      className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${page === p
                           ? "bg-[#164e33] text-white border border-[#164e33]"
                           : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       {p}
                     </button>
@@ -583,7 +584,7 @@ export default function VendorApprovals() {
         {isDetailOpen && selectedVendor && (
           <div className="fixed inset-0 z-50 overflow-hidden">
             <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onClick={() => setIsDetailOpen(false)} />
-            
+
             <div className="fixed inset-y-0 right-0 w-full max-w-2xl bg-white shadow-2xl flex flex-col animate-slide-in-right">
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
@@ -601,7 +602,7 @@ export default function VendorApprovals() {
 
               {/* Content */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                
+
                 {/* Business Info Header */}
                 <div className="bg-gray-50 rounded-lg p-5 border border-gray-200 space-y-4">
                   <div className="flex items-start gap-4">
@@ -634,7 +635,7 @@ export default function VendorApprovals() {
                 </div>
 
 
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-white p-4 rounded-lg border border-gray-200">
                     <h3 className="text-sm font-medium text-gray-500 mb-1">Phone</h3>
@@ -745,13 +746,13 @@ export default function VendorApprovals() {
 
                 {/* Rejection Reason View (Displayed at the end) */}
                 {selectedVendor.status === 'REJECTED' && selectedVendor.rejectionReason && (
-                   <div className="bg-red-50 p-4 rounded-lg border border-red-200 mt-4 flex gap-3">
-                     <div className="mt-0.5 text-red-500"><X size={18} /></div>
-                     <div>
-                       <h3 className="text-sm font-bold text-red-800 mb-1">Rejection Reason</h3>
-                       <p className="text-sm text-red-700">{selectedVendor.rejectionReason}</p>
-                     </div>
-                   </div>
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200 mt-4 flex gap-3">
+                    <div className="mt-0.5 text-red-500"><X size={18} /></div>
+                    <div>
+                      <h3 className="text-sm font-bold text-red-800 mb-1">Rejection Reason</h3>
+                      <p className="text-sm text-red-700">{selectedVendor.rejectionReason}</p>
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -759,16 +760,16 @@ export default function VendorApprovals() {
               {(canApprove || canReject) && (
                 <div className="flex flex-col gap-4 px-6 py-4 border-t border-gray-200 bg-gray-50">
                   {canReject && selectedVendor.status !== "REJECTED" && (
-                     <div className="w-full">
-                       <label className="block text-sm font-medium text-gray-700 mb-1">Rejection Reason (if rejecting)</label>
-                       <textarea
-                         value={rejectionReasonInput}
-                         onChange={(e) => setRejectionReasonInput(e.target.value)}
-                         placeholder="Type reason here before rejecting..."
-                         className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33] text-sm"
-                         rows={2}
-                       />
-                     </div>
+                    <div className="w-full">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Rejection Reason (if rejecting)</label>
+                      <textarea
+                        value={rejectionReasonInput}
+                        onChange={(e) => setRejectionReasonInput(e.target.value)}
+                        placeholder="Type reason here before rejecting..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33] text-sm"
+                        rows={2}
+                      />
+                    </div>
                   )}
                   <div className="flex items-center justify-end gap-3">
                     {canReject && selectedVendor.status !== "REJECTED" && (
@@ -800,7 +801,7 @@ export default function VendorApprovals() {
         {isEditOpen && selectedVendor && (
           <div className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center">
             <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onClick={() => setIsEditOpen(false)} />
-            
+
             <div className="bg-white w-full max-w-2xl rounded-xl shadow-2xl z-10 flex flex-col max-h-[90vh] overflow-hidden m-4 animate-scale-in">
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900">Edit Vendor</h2>
@@ -819,7 +820,7 @@ export default function VendorApprovals() {
                     <input
                       type="text"
                       value={editForm.businessName}
-                      onChange={(e) => setEditForm({...editForm, businessName: e.target.value})}
+                      onChange={(e) => setEditForm({ ...editForm, businessName: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>
@@ -829,7 +830,7 @@ export default function VendorApprovals() {
                     <input
                       type="text"
                       value={editForm.phone}
-                      onChange={(e) => setEditForm({...editForm, phone: e.target.value.replace(/\D/g, '').slice(0, 10)})}
+                      onChange={(e) => setEditForm({ ...editForm, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                       maxLength={10}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
@@ -840,7 +841,7 @@ export default function VendorApprovals() {
                     <input
                       type="text"
                       value={editForm.city}
-                      onChange={(e) => setEditForm({...editForm, city: e.target.value})}
+                      onChange={(e) => setEditForm({ ...editForm, city: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>
@@ -850,7 +851,7 @@ export default function VendorApprovals() {
                     <input
                       type="text"
                       value={editForm.address}
-                      onChange={(e) => setEditForm({...editForm, address: e.target.value})}
+                      onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>
@@ -860,7 +861,7 @@ export default function VendorApprovals() {
                     <input
                       type="text"
                       value={editForm.gstNumber}
-                      onChange={(e) => setEditForm({...editForm, gstNumber: e.target.value})}
+                      onChange={(e) => setEditForm({ ...editForm, gstNumber: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>
@@ -870,7 +871,7 @@ export default function VendorApprovals() {
                     <input
                       type="text"
                       value={editForm.aadhaarNumber}
-                      onChange={(e) => setEditForm({...editForm, aadhaarNumber: e.target.value.replace(/\D/g, '').slice(0, 12)})}
+                      onChange={(e) => setEditForm({ ...editForm, aadhaarNumber: e.target.value.replace(/\D/g, '').slice(0, 12) })}
                       maxLength={12}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
@@ -881,7 +882,7 @@ export default function VendorApprovals() {
                     <input
                       type="email"
                       value={editForm.email}
-                      onChange={(e) => setEditForm({...editForm, email: e.target.value.trim()})}
+                      onChange={(e) => setEditForm({ ...editForm, email: e.target.value.trim() })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>
@@ -891,7 +892,7 @@ export default function VendorApprovals() {
                     <input
                       type="url"
                       value={editForm.googleBusinessLink}
-                      onChange={(e) => setEditForm({...editForm, googleBusinessLink: e.target.value})}
+                      onChange={(e) => setEditForm({ ...editForm, googleBusinessLink: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>
@@ -902,7 +903,7 @@ export default function VendorApprovals() {
                       type="text"
                       placeholder="e.g. 9 AM - 6 PM"
                       value={editForm.workingHours}
-                      onChange={(e) => setEditForm({...editForm, workingHours: e.target.value})}
+                      onChange={(e) => setEditForm({ ...editForm, workingHours: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     />
                   </div>
@@ -911,7 +912,7 @@ export default function VendorApprovals() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select
                       value={editForm.status}
-                      onChange={(e) => setEditForm({...editForm, status: e.target.value})}
+                      onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33] bg-white"
                     >
                       <option value="PENDING">PENDING</option>
@@ -975,10 +976,10 @@ export default function VendorApprovals() {
                             type="checkbox"
                             checked={editForm.categoryIds?.includes(cat.id) || false}
                             onChange={(e) => {
-                              const newIds = e.target.checked 
+                              const newIds = e.target.checked
                                 ? [...(editForm.categoryIds || []), cat.id]
                                 : (editForm.categoryIds || []).filter((id: string) => id !== cat.id);
-                              setEditForm({...editForm, categoryIds: newIds});
+                              setEditForm({ ...editForm, categoryIds: newIds });
                             }}
                             className="rounded border-gray-300 text-[#164e33] focus:ring-[#164e33]"
                           />
@@ -993,7 +994,7 @@ export default function VendorApprovals() {
                     <textarea
                       rows={4}
                       value={editForm.description}
-                      onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#164e33]"
                     ></textarea>
                   </div>

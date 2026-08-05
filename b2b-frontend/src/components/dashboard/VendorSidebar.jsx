@@ -11,6 +11,7 @@ import {
   CreditCard,
   BarChart3,
   ChevronRight,
+  ChevronLeft,
   Bell,
   Menu,
   Package,
@@ -93,15 +94,13 @@ export default function VendorSidebar({
           {/* Desktop Toggle Button */}
           <button
             onClick={onToggle}
-            className={`hidden lg:flex items-center justify-center p-1.5 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10 ${
-              isCollapsed ? "mt-2" : ""
-            }`}
+            className={`hidden lg:flex absolute -right-3 top-5 items-center justify-center w-6 h-6 rounded-full bg-[#124131] border border-[#ffffff]/20 text-white/70 hover:text-white transition-all shadow-md z-50`}
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isCollapsed ? (
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3 h-3 ml-0.5" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <ChevronLeft className="w-3 h-3 mr-0.5" />
             )}
           </button>
         </div>

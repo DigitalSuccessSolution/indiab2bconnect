@@ -111,7 +111,7 @@ export default function VendorNotificationsPage() {
           <button 
             onClick={markAllRead}
             disabled={!notifications.some(n => !n.isRead)}
-            className="h-10 px-5 bg-white border border-gray-200 text-slate-700 rounded-lg font-bold text-xs flex items-center gap-2 hover:bg-gray-50 disabled:opacity-50 transition-all shadow-sm"
+            className="h-10 px-5 bg-white border border-gray-200 text-gray-900 rounded-lg font-bold text-xs flex items-center gap-2 hover:bg-gray-50 disabled:opacity-50 transition-all shadow-sm"
           >
             <CheckCheck className="w-4 h-4" />
             Mark all read

@@ -21,6 +21,7 @@ export default function SuperAdminLeads() {
   
   const canUpdate = hasPermission('leads_update');
   const canReassign = hasPermission('leads_reassign');
+  const hasActions = canUpdate || canReassign;
 
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -223,7 +224,7 @@ export default function SuperAdminLeads() {
                 <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Location</th>
                 <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Assigned Vendor</th>
-                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                {hasActions && <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -295,8 +296,8 @@ export default function SuperAdminLeads() {
                         <span className="text-sm text-gray-400 italic">Unassigned</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      {(canUpdate || canReassign) && (
+                    {hasActions && (
+                      <td className="px-6 py-4 text-right">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -308,8 +309,8 @@ export default function SuperAdminLeads() {
                           <Settings size={14} />
                           Manage
                         </button>
-                      )}
-                    </td>
+                      </td>
+                    )}
                   </tr>
                 ))
               ) : (
@@ -444,10 +445,12 @@ export default function SuperAdminLeads() {
                           </div>
                           <button
                             onClick={() => handleAssign(selectedLead.id, vendor.id)}
-                            disabled={assigning === vendor.id || selectedLead.vendor?.id === vendor.id}
+                            disabled={assigning === vendor.id || !!selectedLead.vendor}
                             className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
                               selectedLead.vendor?.id === vendor.id 
                                 ? "bg-green-50 text-green-700 border border-green-200 cursor-default" 
+                                : !!selectedLead.vendor
+                                ? "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
                                 : "bg-[#164e33] hover:bg-[#113f29] text-white"
                             }`}
                           >

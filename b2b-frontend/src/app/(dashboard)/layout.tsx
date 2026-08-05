@@ -185,7 +185,7 @@ export default function DashboardLayout({
       case 'vendor-approvals': return "Vendor Approvals";
       case 'packages': return "Membership Tiers";
       case 'inquiries': return "Contact Inquiries";
-      case 'users': return "Team Management";
+      case 'users': return "Users Management";
       case 'leads': return "Leads Management";
       case 'settings': return "Settings";
       case 'categories': return "Categories";

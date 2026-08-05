@@ -26,6 +26,7 @@ export default function OfferingApprovals() {
   const canDelete = hasPermission('products_delete');
   const canApprove = hasPermission('products_approve');
   const canReject = hasPermission('products_reject');
+  const hasActions = canEdit || canDelete || canApprove || canReject;
 
   const [offerings, setOfferings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -332,7 +333,7 @@ export default function OfferingApprovals() {
                   <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Price / MOQ</th>
                   <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Listed On</th>
-                  <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                  {hasActions && <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -405,39 +406,48 @@ export default function OfferingApprovals() {
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {new Date(offer.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-3">
-                          <button
-                            onClick={() => {
-                              setSelectedOffering(offer);
-                              setRejectionReasonInput("");
-                              setIsDetailOpen(true);
-                            }}
-                            title="View Details"
-                            className="text-gray-400 hover:text-[#164e33] transition-colors"
-                          >
-                            <Eye size={18} />
-                          </button>
-                          {canEdit && (
+                      {hasActions && (
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-3">
                             <button
-                              onClick={() => handleEdit(offer)}
-                              title="Edit"
-                              className="text-gray-400 hover:text-blue-600 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedOffering(offer);
+                                setRejectionReasonInput("");
+                                setIsDetailOpen(true);
+                              }}
+                              title="View Details"
+                              className="text-gray-400 hover:text-[#164e33] transition-colors"
                             >
-                              <Edit2 size={18} />
+                              <Eye size={18} />
                             </button>
-                          )}
-                          {canDelete && (
-                            <button
-                              onClick={() => handleDelete(offer.id)}
-                              title="Delete"
-                              className="text-gray-400 hover:text-red-600 transition-colors"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          )}
-                        </div>
-                      </td>
+                            {canEdit && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEdit(offer);
+                                }}
+                                title="Edit"
+                                className="text-gray-400 hover:text-blue-600 transition-colors"
+                              >
+                                <Edit2 size={18} />
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(offer.id);
+                                }}
+                                title="Delete"
+                                className="text-gray-400 hover:text-red-600 transition-colors"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (

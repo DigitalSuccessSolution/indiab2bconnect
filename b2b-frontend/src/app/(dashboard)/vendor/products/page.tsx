@@ -560,12 +560,12 @@ export default function VendorProducts() {
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                  <div className="space-y-4">
                                     <div className="space-y-1.5">
-                                       <label className="block text-sm font-medium text-gray-700">{activeTab === 'SERVICE' ? 'Service Name' : 'Product Name'}</label>
+                                       <label className="block text-sm font-medium text-gray-700">{activeTab === 'SERVICE' ? 'Service Name' : 'Product Name'} <span className="text-red-500">*</span></label>
                                        <input type="text" placeholder="e.g. Herbal Ayurveda Hub" className={`w-full bg-white border ${formErrors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#164e33] focus:border-transparent transition-shadow`} value={newProduct.name} onChange={e => { setNewProduct({ ...newProduct, name: e.target.value }); setFormErrors({ ...formErrors, name: '' }); }} />
                                        {formErrors.name && <p className="text-[10px] text-red-500 mt-1">{formErrors.name}</p>}
                                     </div>
                                     <div className="space-y-1.5">
-                                       <label className="block text-sm font-medium text-gray-700">Description</label>
+                                       <label className="block text-sm font-medium text-gray-700">Description <span className="text-red-500">*</span></label>
                                        <textarea placeholder="Tell buyers about your item..." className={`w-full bg-white border ${formErrors.description ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#164e33] focus:border-transparent transition-shadow min-h-[100px] resize-none`} value={newProduct.description} onChange={e => { setNewProduct({ ...newProduct, description: e.target.value }); setFormErrors({ ...formErrors, description: '' }); }} />
                                        {formErrors.description && <p className="text-[10px] text-red-500 mt-1">{formErrors.description}</p>}
                                     </div>
@@ -604,26 +604,26 @@ export default function VendorProducts() {
                                  <div className="space-y-4">
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                                        <div className="space-y-1.5">
-                                          <label className="block text-sm font-medium text-gray-700">{activeTab === 'SERVICE' ? 'Base Price (INR)' : 'Price (INR)'}</label>
+                                          <label className="block text-sm font-medium text-gray-700">{activeTab === 'SERVICE' ? 'Base Price (INR)' : 'Price (INR)'} <span className="text-red-500">*</span></label>
                                           <input type="text" placeholder="0.00" className={`w-full bg-white border ${formErrors.price ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#164e33] focus:border-transparent transition-shadow`} value={newProduct.price} onChange={e => { setNewProduct({ ...newProduct, price: e.target.value }); setFormErrors({ ...formErrors, price: '' }); }} />
                                           {formErrors.price && <p className="text-[9px] text-red-500 mt-1">{formErrors.price}</p>}
                                        </div>
                                        {activeTab === 'PRODUCT' ? (
                                           <>
                                              <div className="space-y-1.5">
-                                                <label className="block text-sm font-medium text-gray-700">SKU</label>
+                                                <label className="block text-sm font-medium text-gray-700">SKU <span className="text-red-500">*</span></label>
                                                 <input type="text" placeholder="REF-001" className={`w-full bg-white border ${formErrors.sku ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#164e33] focus:border-transparent transition-shadow`} value={newProduct.sku} onChange={e => { setNewProduct({ ...newProduct, sku: e.target.value }); setFormErrors({ ...formErrors, sku: '' }); }} />
                                                 {formErrors.sku && <p className="text-[9px] text-red-500 mt-1">{formErrors.sku}</p>}
                                              </div>
                                              <div className="space-y-1.5">
-                                                <label className="block text-sm font-medium text-gray-700">MOQ</label>
+                                                <label className="block text-sm font-medium text-gray-700">MOQ <span className="text-red-500">*</span></label>
                                                 <input type="number" min="1" placeholder="1" className={`w-full bg-white border ${formErrors.moq ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#164e33] focus:border-transparent transition-shadow`} value={newProduct.moq} onChange={e => { setNewProduct({ ...newProduct, moq: e.target.value }); setFormErrors({ ...formErrors, moq: '' }); }} />
                                                 {formErrors.moq && <p className="text-[9px] text-red-500 mt-1">{formErrors.moq}</p>}
                                              </div>
                                           </>
                                        ) : (
                                           <div className="col-span-2 space-y-1.5">
-                                             <label className="block text-sm font-medium text-gray-700">Service Area / Delivery Mode</label>
+                                             <label className="block text-sm font-medium text-gray-700">Service Area / Delivery Mode <span className="text-red-500">*</span></label>
                                              <input type="text" placeholder="e.g. Online, On-site, Delhi NCR" className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#164e33] focus:border-transparent transition-shadow" value={newProduct.sku} onChange={e => { setNewProduct({ ...newProduct, sku: e.target.value }) }} />
                                           </div>
                                        )}
@@ -644,7 +644,7 @@ export default function VendorProducts() {
                                     </div>
 
                                     <div className="space-y-1.5">
-                                       <label className="block text-sm font-medium text-gray-700">Category</label>
+                                       <label className="block text-sm font-medium text-gray-700">Category <span className="text-red-500">*</span></label>
                                        <select className={`w-full bg-white border ${formErrors.category ? 'border-red-500' : 'border-gray-300'} rounded-lg px-3 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#164e33] focus:border-transparent transition-shadow appearance-none`} value={newProduct.category} onChange={e => { setNewProduct({ ...newProduct, category: e.target.value }); setFormErrors({ ...formErrors, category: '' }); }}>
                                           <option value="">Select Category</option>
                                           {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
@@ -675,7 +675,7 @@ export default function VendorProducts() {
                                     </div>
                                     <div className="space-y-2 pt-2">
                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                                          <label className="block text-sm font-medium text-gray-700">Product Images</label>
+                                          <label className="block text-sm font-medium text-gray-700">Product Images <span className="text-red-500">*</span></label>
                                           <span className="text-[10px] text-gray-500">Max 5 Images • 2MB (JPEG, PNG, WebP)</span>
                                        </div>
 
@@ -865,9 +865,9 @@ export default function VendorProducts() {
                            <button
                               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                               disabled={currentPage === 1 || isTableLoading}
-                              className="p-1.5 border border-gray-300 rounded-md bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                              className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                            >
-                              <ChevronLeft className="w-5 h-5" />
+                              <ChevronLeft className="w-4 h-4" />
                            </button>
 
                            <div className="flex items-center gap-1">
@@ -878,7 +878,7 @@ export default function VendorProducts() {
                                        <button
                                           key={pageNum}
                                           onClick={() => setCurrentPage(pageNum)}
-                                          className={`w-8 h-8 rounded-md text-sm font-medium ${currentPage === pageNum
+                                          className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${currentPage === pageNum
                                                 ? "bg-[#164e33] text-white border border-[#164e33]"
                                                 : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                                              }`}
@@ -896,24 +896,24 @@ export default function VendorProducts() {
                            <button
                               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                               disabled={currentPage === totalPages || totalPages === 0 || isTableLoading}
-                              className="p-1.5 border border-gray-300 rounded-md bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                              className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                            >
-                              <ChevronRight className="w-5 h-5" />
+                              <ChevronRight className="w-4 h-4" />
                            </button>
                         </div>
 
-                        <div className="bg-white border border-gray-300 px-3 py-1.5 rounded-md flex items-center gap-2 hover:bg-gray-50 transition-colors group relative">
+                        <div className="h-8 bg-white border border-gray-300 px-3 rounded-md flex items-center gap-2 hover:bg-gray-50 transition-colors group relative">
                            <select
                               value={itemsPerPage}
                               onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                            >
-                              <option value={5}>5 / page</option>
-                              <option value={10}>10 / page</option>
-                              <option value={20}>20 / page</option>
-                              <option value={50}>50 / page</option>
+                              <option value={5}>5</option>
+                              <option value={10}>10</option>
+                              <option value={20}>20</option>
+                              <option value={50}>50</option>
                            </select>
-                           <span className="text-sm font-medium text-gray-700">{itemsPerPage} / page</span>
+                           <span className="text-sm font-medium text-gray-700">{itemsPerPage}</span>
                            <ChevronDown size={14} className="text-gray-500 group-hover:text-gray-700 transition-colors" />
                         </div>
                      </div>

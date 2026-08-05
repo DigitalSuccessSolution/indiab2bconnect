@@ -32,6 +32,7 @@ export default function AdminManagement() {
   const canAdd = hasPermission('admins_create');
   const canEdit = hasPermission('admins_update');
   const canDelete = hasPermission('admins_delete');
+  const hasActions = canEdit || canDelete;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -369,7 +370,7 @@ export default function AdminManagement() {
                         <th className="px-6 py-4">Role</th>
                         <th className="px-6 py-4">Permissions</th>
                         <th className="px-6 py-4 text-center">Status</th>
-                        <th className="px-6 py-4 text-right">Actions</th>
+                        {hasActions && <th className="px-6 py-4 text-right">Actions</th>}
                      </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -388,7 +389,7 @@ export default function AdminManagement() {
                               <td className="px-6 py-4"><div className="h-5 bg-gray-200 rounded-full w-20"></div></td>
                               <td className="px-6 py-4"><div className="h-5 bg-gray-200 rounded w-32"></div></td>
                               <td className="px-6 py-4 text-center"><div className="h-5 bg-gray-200 rounded-full w-20 mx-auto"></div></td>
-                              <td className="px-6 py-4 text-right"><div className="h-8 bg-gray-200 rounded-md w-16 ml-auto"></div></td>
+                              {hasActions && <td className="px-6 py-4 text-right"><div className="h-8 bg-gray-200 rounded-md w-16 ml-auto"></div></td>}
                            </tr>
                         ))
                      ) : filteredAdmins.length > 0 ? (
@@ -439,20 +440,22 @@ export default function AdminManagement() {
                                     {isActive ? 'Active' : 'Suspended'}
                                  </span>
                               </td>
-                              <td className="px-6 py-4 text-right">
-                                 <div className="flex justify-end items-center gap-1">
-                                    {canEdit && (
-                                      <button onClick={() => handleEdit(admin)} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all" title="Edit Admin">
-                                         <Edit className="w-4 h-4" />
-                                      </button>
-                                    )}
-                                    {canDelete && (
-                                      <button onClick={() => handleDelete(admin.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all" title="Revoke Access">
-                                         <Trash2 className="w-4 h-4" />
-                                      </button>
-                                    )}
-                                 </div>
-                              </td>
+                              {hasActions && (
+                                 <td className="px-6 py-4 text-right">
+                                    <div className="flex justify-end items-center gap-1">
+                                       {canEdit && (
+                                         <button onClick={() => handleEdit(admin)} className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all" title="Edit Admin">
+                                            <Edit className="w-4 h-4" />
+                                         </button>
+                                       )}
+                                       {canDelete && (
+                                         <button onClick={() => handleDelete(admin.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all" title="Revoke Access">
+                                            <Trash2 className="w-4 h-4" />
+                                         </button>
+                                       )}
+                                    </div>
+                                 </td>
+                              )}
                            </tr>
                         );
                         })

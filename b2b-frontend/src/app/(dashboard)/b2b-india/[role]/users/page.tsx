@@ -28,6 +28,7 @@ export default function AdminUsers() {
 
   const canEdit = hasPermission('users_update');
   const canDelete = hasPermission('users_delete');
+  const hasActions = canEdit || canDelete;
 
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -213,7 +214,7 @@ export default function AdminUsers() {
                   <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                   <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
                   <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                  {hasActions && <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -275,31 +276,33 @@ export default function AdminUsers() {
                           {user.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {canEdit && (
-                            <button
-                              onClick={() => {
-                                setSelectedUser({ ...user, password: '' });
-                                setIsModalOpen(true);
-                              }}
-                              className="p-1.5 text-gray-400 hover:text-[#164e33] hover:bg-[#164e33]/10 rounded-md transition-colors"
-                              title="Edit User"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                          )}
-                          {canDelete && (
-                            <button
-                              onClick={() => handleDeleteUser(user)}
-                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                              title="Delete User"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          )}
-                        </div>
-                      </td>
+                      {hasActions && (
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {canEdit && (
+                              <button
+                                onClick={() => {
+                                  setSelectedUser({ ...user, password: '' });
+                                  setIsModalOpen(true);
+                                }}
+                                className="p-1.5 text-gray-400 hover:text-[#164e33] hover:bg-[#164e33]/10 rounded-md transition-colors"
+                                title="Edit User"
+                              >
+                                <Edit2 size={16} />
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                onClick={() => handleDeleteUser(user)}
+                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                title="Delete User"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (

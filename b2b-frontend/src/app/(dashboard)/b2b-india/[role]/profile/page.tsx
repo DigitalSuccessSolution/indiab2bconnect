@@ -67,11 +67,11 @@ export default function AdminProfile() {
    const handleUpdate = async (e: React.FormEvent) => {
       e.preventDefault();
 
-      if (formData.phone && formData.phone.length !== 10) {
+      if (!formData.phone || formData.phone.length !== 10) {
          Swal.fire({
             icon: 'error',
             title: 'Invalid Phone Number',
-            text: 'Phone number must be exactly 10 digits.'
+            text: 'Phone number is required and must be exactly 10 digits.'
          });
          return;
       }
@@ -244,7 +244,7 @@ export default function AdminProfile() {
                   <div className="space-y-2">
                      <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
                         <User className="w-4 h-4 text-slate-400" />
-                        Full Name
+                        Full Name <span className="text-red-500">*</span>
                      </label>
                      <input
                         type="text"
@@ -284,10 +284,11 @@ export default function AdminProfile() {
                   <div className="space-y-2">
                      <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
                         <Phone className="w-4 h-4 text-slate-400" />
-                        Phone Number
+                        Contact Number <span className="text-red-500">*</span>
                      </label>
                      <input
                         type="tel"
+                        required
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                         maxLength={10}

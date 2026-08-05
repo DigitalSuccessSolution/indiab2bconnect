@@ -22,6 +22,7 @@ export default function AdminInquiries() {
   const { hasPermission, user } = useAuth();
   const canUpdate = user?.role === 'SUPERADMIN' || hasPermission?.('inquiries_update');
   const canDelete = user?.role === 'SUPERADMIN' || hasPermission?.('inquiries_delete');
+  const hasActions = canUpdate || canDelete;
 
   const [inquiries, setInquiries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -225,7 +226,7 @@ export default function AdminInquiries() {
 
   return (
     <div className="p-6">
-      <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-semibold text-gray-900 tracking-tight flex items-center gap-2">
             <Headphones className="text-orange-600" />
@@ -235,12 +236,10 @@ export default function AdminInquiries() {
             Manage user support tickets and contact requests. Total: {totalCount}
           </p>
         </div>
-      </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         {/* Filters */}
-        <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-4 bg-slate-50/50">
-          <div className="relative flex-1">
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+          <div className="relative flex-1 lg:w-72">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
               size={18}
@@ -250,7 +249,7 @@ export default function AdminInquiries() {
               placeholder="Search by name, email, or subject..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none bg-white"
+              className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none bg-white focus:ring-1 focus:ring-orange-500 shadow-sm"
             />
           </div>
           <div className="relative">
@@ -260,7 +259,7 @@ export default function AdminInquiries() {
                 setStatusFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="appearance-none px-4 pr-10 py-2 border border-slate-200 rounded-lg focus:outline-none bg-white min-w-[150px] cursor-pointer"
+              className="appearance-none px-4 pr-10 py-2 border border-slate-200 rounded-lg focus:outline-none bg-white min-w-[150px] cursor-pointer focus:ring-1 focus:ring-orange-500 shadow-sm"
             >
               <option value="ALL">All Status</option>
               <option value="PENDING">Pending</option>
@@ -270,7 +269,9 @@ export default function AdminInquiries() {
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
         </div>
+      </div>
 
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -280,7 +281,7 @@ export default function AdminInquiries() {
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">User Info</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Subject & Message</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Action</th>
+                {hasActions && <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Action</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -337,31 +338,32 @@ export default function AdminInquiries() {
                     <td className="px-6 py-4">
                       {getStatusBadge(inq.status)}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-
-                        <button
-                          onClick={() => {
-                            setSelectedInquiry(inq);
-                            setIsViewModalOpen(true);
-                          }}
-                          className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded transition-colors"
-                          title="View Inquiry"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        {canDelete && (
+                    {hasActions && (
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
                           <button
-                            onClick={() => handleDeleteInquiry(inq.id)}
-                            disabled={updatingId === inq.id}
-                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
-                            title="Delete Inquiry"
+                            onClick={() => {
+                              setSelectedInquiry(inq);
+                              setIsViewModalOpen(true);
+                            }}
+                            className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded transition-colors"
+                            title="View Inquiry"
                           >
-                            <Trash2 size={16} />
+                            <Eye size={16} />
                           </button>
-                        )}
-                      </div>
-                    </td>
+                          {canDelete && (
+                            <button
+                              onClick={() => handleDeleteInquiry(inq.id)}
+                              disabled={updatingId === inq.id}
+                              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                              title="Delete Inquiry"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </motion.tr>
                 ))
               )}
