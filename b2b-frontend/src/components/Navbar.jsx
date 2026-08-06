@@ -39,14 +39,14 @@ import BottomNav from "./BottomNav";
 const Navbar = () => {
   const router = useRouter();
   const { user, logout } = useAuth();
-  
+
   const handleLogoutWithConfirm = () => {
     Swal.fire({
       title: 'Are you sure?',
       text: "You will be logged out of your account.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#E64600',
+      confirmButtonColor: '#164e33',
       cancelButtonColor: '#94a3b8',
       confirmButtonText: 'Yes, logout'
     }).then((result) => {
@@ -517,437 +517,437 @@ const Navbar = () => {
   return (
     <>
       <nav
-      className={`absolute md:fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-        ? "bg-white/90 backdrop-blur-md shadow-sm py-2"
-        : "bg-white py-4"
-        }`}
-    >
-      <div className="max-w-[1440px] mx-auto px-4 md:px-6 flex items-center justify-between gap-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-          <Image
-            src="/logo.png"
-            alt="MarketHub Logo"
-            width={150}
-            height={40}
-            className="h-10 w-auto object-contain"
-            priority
-          />
-        </Link>
+        className={`absolute md:fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? "bg-white/90 backdrop-blur-md shadow-sm py-2"
+          : "bg-white py-4"
+          }`}
+      >
+        <div className="max-w-[1440px] mx-auto px-4 md:px-6 flex items-center justify-between gap-4">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+            <Image
+              src="/logo.png"
+              alt="MarketHub Logo"
+              width={150}
+              height={40}
+              className="h-10 w-auto object-contain"
+              priority
+            />
+          </Link>
 
-        {/* Search Bar - Main Layout */}
-        <div className="hidden md:flex flex-grow max-w-3xl mx-4">
-          <form
-            onSubmit={handleSearch}
-            className="w-full flex items-center gap-3"
-          >
-            {/* Location Container */}
-            <div className="relative group input_location_box">
-              <div className="flex items-center h-[46px] bg-white border border-slate-200 rounded-lg w-[220px] hover:border-slate-300 transition-all cursor-text overflow-hidden relative z-20">
-                <div className="h-full flex items-center justify-center pl-3">
-                  <MapPin className="w-5 h-5 text-slate-400 flex-shrink-0" />
-                </div>
-                <input
-                  type="text"
-                  id="city-auto-sug"
-                  role="combobox"
-                  aria-autocomplete="list"
-                  aria-expanded={isLocationDropdownOpen}
-                  aria-haspopup="listbox"
-                  aria-controls="locbox"
-                  aria-label="Select Location"
-                  autoComplete="off"
-                  value={location}
-                  onChange={(e) => {
-                    setLocation(e.target.value);
-                    if (!isLocationDropdownOpen)
+          {/* Search Bar - Main Layout */}
+          <div className="hidden md:flex flex-grow max-w-3xl mx-4">
+            <form
+              onSubmit={handleSearch}
+              className="w-full flex items-center gap-3"
+            >
+              {/* Location Container */}
+              <div className="relative group input_location_box">
+                <div className="flex items-center h-[46px] bg-white border border-slate-200 rounded-lg w-[220px] hover:border-slate-300 transition-all cursor-text overflow-hidden relative z-20">
+                  <div className="h-full flex items-center justify-center pl-3">
+                    <MapPin className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                  </div>
+                  <input
+                    type="text"
+                    id="city-auto-sug"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded={isLocationDropdownOpen}
+                    aria-haspopup="listbox"
+                    aria-controls="locbox"
+                    aria-label="Select Location"
+                    autoComplete="off"
+                    value={location}
+                    onChange={(e) => {
+                      setLocation(e.target.value);
+                      if (!isLocationDropdownOpen)
+                        setIsLocationDropdownOpen(true);
+                    }}
+                    placeholder="Select Location"
+                    className="input_location bg-transparent flex-grow h-full px-3 text-[14px] font-normal text-[#111] leading-normal outline-none placeholder:text-slate-400 cursor-text font-sans"
+                    onFocus={() => {
                       setIsLocationDropdownOpen(true);
-                  }}
-                  placeholder="Select Location"
-                  className="input_location bg-transparent flex-grow h-full px-3 text-[14px] font-normal text-[#111] leading-normal outline-none placeholder:text-slate-400 cursor-text font-sans"
-                  onFocus={() => {
-                    setIsLocationDropdownOpen(true);
-                    setIsSearchDropdownOpen(false);
-                  }}
-                />
-              </div>
+                      setIsSearchDropdownOpen(false);
+                    }}
+                  />
+                </div>
 
-              {/* Location Dropdown */}
-              <AnimatePresence>
-                {isLocationDropdownOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setIsLocationDropdownOpen(false)}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute top-full left-0 mt-2 w-[320px] bg-white border border-slate-300 rounded-xl shadow-2xl z-20 overflow-y-auto max-h-[450px] scrollbar-hide py-2"
-                      style={{
-                        scrollbarWidth: "none",
-                        msOverflowStyle: "none",
-                      }}
-                    >
-                      <button
-                        type="button"
-                        disabled={isDetecting}
-                        className="w-full flex items-center gap-3 px-6 py-4 text-[#FF4F00] hover:bg-orange-50 transition-colors border-b border-slate-200 disabled:opacity-50"
-                        onClick={handleDetectLocation}
+                {/* Location Dropdown */}
+                <AnimatePresence>
+                  {isLocationDropdownOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setIsLocationDropdownOpen(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute top-full left-0 mt-2 w-[320px] bg-white border border-slate-300 rounded-xl shadow-2xl z-20 overflow-y-auto max-h-[450px] scrollbar-hide py-2"
+                        style={{
+                          scrollbarWidth: "none",
+                          msOverflowStyle: "none",
+                        }}
                       >
-                        <LocateFixed
-                          className={`w-5 h-5 ${isDetecting ? "animate-spin" : ""}`}
-                        />
-                        <span className="font-semibold text-[15px]">
-                          {isDetecting ? "Detecting..." : "Detect Location"}
-                        </span>
-                      </button>
+                        <button
+                          type="button"
+                          disabled={isDetecting}
+                          className="w-full flex items-center gap-3 px-6 py-4 text-[#FF4F00] hover:bg-orange-50 transition-colors border-b border-slate-200 disabled:opacity-50"
+                          onClick={handleDetectLocation}
+                        >
+                          <LocateFixed
+                            className={`w-5 h-5 ${isDetecting ? "animate-spin" : ""}`}
+                          />
+                          <span className="font-semibold text-[15px]">
+                            {isDetecting ? "Detecting..." : "Detect Location"}
+                          </span>
+                        </button>
 
-                      <div className="px-6 py-4">
-                        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest flex items-center justify-between">
-                          {isSearchingLocations
-                            ? "Searching..."
-                            : location.length >= 3
-                              ? "Suggestions"
-                              : "Your Areas"}
-                          {!isSearchingLocations &&
-                            location.length < 3 &&
-                            recentLocations.length > 0 && (
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  clearRecentLocations();
-                                }}
-                                className="text-[#FF4F00] hover:text-orange-700 capitalize font-semibold text-[11px]"
-                              >
-                                Clear All
-                              </button>
-                            )}
-                        </span>
+                        <div className="px-6 py-4">
+                          <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest flex items-center justify-between">
+                            {isSearchingLocations
+                              ? "Searching..."
+                              : location.length >= 3
+                                ? "Suggestions"
+                                : "Your Areas"}
+                            {!isSearchingLocations &&
+                              location.length < 3 &&
+                              recentLocations.length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    clearRecentLocations();
+                                  }}
+                                  className="text-[#FF4F00] hover:text-orange-700 capitalize font-semibold text-[11px]"
+                                >
+                                  Clear All
+                                </button>
+                              )}
+                          </span>
 
-                        <div className="mt-4 space-y-1">
-                          {isSearchingLocations ? (
-                            <div className="py-4 space-y-3">
-                              <div className="h-4 bg-slate-100 rounded-full animate-pulse w-3/4"></div>
-                              <div className="h-4 bg-slate-100 rounded-full animate-pulse w-1/2"></div>
-                            </div>
-                          ) : dynamicLocations.length > 0 ? (
-                            dynamicLocations.map((loc, i) => (
-                              <button
-                                key={i}
-                                type="button"
-                                onClick={() => {
-                                  setLocation(loc);
-                                  saveRecentLocation(loc);
-                                  setIsLocationDropdownOpen(false);
-                                }}
-                                className="w-full text-left px-0 py-2.5 text-slate-700 hover:text-[#FF4F00] font-medium text-[15px] transition-colors line-clamp-1"
-                              >
-                                {loc}
-                              </button>
-                            ))
-                          ) : location.length >= 3 ? (
-                            <div className="py-4 text-slate-400 text-sm font-medium">
-                              No results found for "{location}"
-                            </div>
-                          ) : (
-                            <>
-                              {/* Recent Locations Section */}
-                              {recentLocations.length > 0 && (
-                                <div className="mb-6">
+                          <div className="mt-4 space-y-1">
+                            {isSearchingLocations ? (
+                              <div className="py-4 space-y-3">
+                                <div className="h-4 bg-slate-100 rounded-full animate-pulse w-3/4"></div>
+                                <div className="h-4 bg-slate-100 rounded-full animate-pulse w-1/2"></div>
+                              </div>
+                            ) : dynamicLocations.length > 0 ? (
+                              dynamicLocations.map((loc, i) => (
+                                <button
+                                  key={i}
+                                  type="button"
+                                  onClick={() => {
+                                    setLocation(loc);
+                                    saveRecentLocation(loc);
+                                    setIsLocationDropdownOpen(false);
+                                  }}
+                                  className="w-full text-left px-0 py-2.5 text-slate-700 hover:text-[#FF4F00] font-medium text-[15px] transition-colors line-clamp-1"
+                                >
+                                  {loc}
+                                </button>
+                              ))
+                            ) : location.length >= 3 ? (
+                              <div className="py-4 text-slate-400 text-sm font-medium">
+                                No results found for "{location}"
+                              </div>
+                            ) : (
+                              <>
+                                {/* Recent Locations Section */}
+                                {recentLocations.length > 0 && (
+                                  <div className="mb-6">
+                                    <span className="text-[11px] font-semibold text-slate-400 mb-2 block">
+                                      Recent Locations
+                                    </span>
+                                    {recentLocations.map((loc, i) => (
+                                      <button
+                                        key={`recent-${i}`}
+                                        type="button"
+                                        onClick={() => {
+                                          setLocation(loc);
+                                          setIsLocationDropdownOpen(false);
+                                        }}
+                                        className="w-full text-left px-0 py-2.5 text-slate-700 hover:text-[#FF4F00] font-medium text-[15px] transition-colors flex items-center gap-3"
+                                      >
+                                        <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                                        {loc}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Trending Areas Section */}
+                                <div>
                                   <span className="text-[11px] font-semibold text-slate-400 mb-2 block">
-                                    Recent Locations
+                                    Trending Areas
                                   </span>
-                                  {recentLocations.map((loc, i) => (
+                                  {trendingLocations.map((loc, i) => (
                                     <button
-                                      key={`recent-${i}`}
+                                      key={`trending-${i}`}
                                       type="button"
                                       onClick={() => {
                                         setLocation(loc);
+                                        saveRecentLocation(loc);
                                         setIsLocationDropdownOpen(false);
                                       }}
-                                      className="w-full text-left px-0 py-2.5 text-slate-700 hover:text-[#FF4F00] font-medium text-[15px] transition-colors flex items-center gap-3"
+                                      className="w-full text-left px-0 py-2.5 text-slate-700 hover:text-[#FF4F00] font-medium text-[15px] transition-colors"
                                     >
-                                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                                       {loc}
                                     </button>
                                   ))}
                                 </div>
-                              )}
-
-                              {/* Trending Areas Section */}
-                              <div>
-                                <span className="text-[11px] font-semibold text-slate-400 mb-2 block">
-                                  Trending Areas
-                                </span>
-                                {trendingLocations.map((loc, i) => (
-                                  <button
-                                    key={`trending-${i}`}
-                                    type="button"
-                                    onClick={() => {
-                                      setLocation(loc);
-                                      saveRecentLocation(loc);
-                                      setIsLocationDropdownOpen(false);
-                                    }}
-                                    className="w-full text-left px-0 py-2.5 text-slate-700 hover:text-[#FF4F00] font-medium text-[15px] transition-colors"
-                                  >
-                                    {loc}
-                                  </button>
-                                ))}
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Search Input Container */}
-            <div className="flex-grow relative">
-              <div className="relative z-20 flex w-full items-center bg-white border border-slate-200 rounded-lg h-[46px] hover:border-slate-300 transition-all focus-within:border-orange-500/50 pr-1.5">
-                <input
-                  type="text"
-                  placeholder="Search products, services or suppliers..."
-                  className="flex-grow h-full bg-transparent px-4 text-[14px] font-normal text-[#111] leading-normal outline-none placeholder:text-slate-400 font-sans"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    if (!isSearchDropdownOpen) setIsSearchDropdownOpen(true);
-                  }}
-                  onFocus={() => {
-                    setIsSearchDropdownOpen(true);
-                    setIsLocationDropdownOpen(false);
-                  }}
-                />
-                <button
-                  type="submit"
-                  className="bg-[#FF4F00] hover:bg-[#E64600] text-white w-[34px] h-[34px] rounded-md transition-all flex items-center justify-center flex-shrink-0 active:scale-95"
-                >
-                  <Search className="w-4 h-4" />
-                </button>
-              </div>
-
-              <AnimatePresence>
-                {isSearchDropdownOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setIsSearchDropdownOpen(false)}
-                    />
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute top-full right-0 mt-2 w-full min-w-[320px] bg-white border border-slate-300 rounded-xl shadow-2xl z-20 overflow-y-auto max-h-[450px] scrollbar-hide py-2"
-                      style={{
-                        scrollbarWidth: "none",
-                        msOverflowStyle: "none",
-                      }}
-                    >
-                      <div className="px-6 py-4 space-y-6">
-                        {/* Trending Searches - Only show if search is empty */}
-                        {!searchQuery.trim() && (
-                          <div>
-                            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest block mb-3">
-                              Trending Searches
-                            </span>
-                            <div className="flex flex-wrap gap-2">
-                              {trendingSearches.map((item, i) => (
-                                <button
-                                  key={`trend-${i}`}
-                                  type="button"
-                                  onClick={() => handleSearch(null, item)}
-                                  className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-[13px] text-slate-600 hover:border-[#FF4F00] hover:text-[#FF4F00] transition-all"
-                                >
-                                  {item}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Categories / Autocomplete Section */}
-                        <div>
-                          {!searchQuery.trim() && (
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest block">
-                                All Categories
-                              </span>
-                              <span className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full">
-                                {allCategories.length} Categories
-                              </span>
-                            </div>
-                          )}
-                          <div className={searchQuery.trim() ? "flex flex-col" : "grid grid-cols-1 gap-1"}>
-                            {isSearching && suggestions.length === 0 ? (
-                              <div className="px-4 py-8 text-center flex flex-col items-center">
-                                <Search className="w-8 h-8 text-slate-300 mb-2 animate-pulse" />
-                                <p className="text-[14px] text-slate-500">Searching...</p>
-                              </div>
-                            ) : searchQuery.trim() && suggestions.length > 0 ? (
-                              suggestions.map((itemName, i) => {
-                                const matchIndex = itemName.toLowerCase().indexOf(searchQuery.trim().toLowerCase());
-                                return (
-                                  <button
-                                    key={`sugg-${i}`}
-                                    type="button"
-                                    onClick={() => handleSearch(null, itemName, null)}
-                                    className="w-full text-left transition-all flex items-center group px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0 gap-3"
-                                  >
-                                    <Search className="w-4 h-4 text-slate-400 shrink-0" />
-                                    {matchIndex !== -1 ? (
-                                      <span className="text-[14px] text-slate-700 truncate">
-                                        {itemName.substring(0, matchIndex)}
-                                        <span className="text-[#1a1a1a] font-semibold">
-                                          {itemName.substring(matchIndex, matchIndex + searchQuery.trim().length)}
-                                        </span>
-                                        {itemName.substring(matchIndex + searchQuery.trim().length)}
-                                      </span>
-                                    ) : (
-                                      <span className="truncate">{itemName}</span>
-                                    )}
-                                  </button>
-                                )
-                              })
-                            ) : !searchQuery.trim() ? (
-                              allCategories.slice(0, 10).map((cat, i) => (
-                                <button
-                                  key={`cat-${i}`}
-                                  type="button"
-                                  onClick={() => handleSearch(null, cat.name, cat.id)}
-                                  className="w-full text-left transition-all flex items-center group px-3 py-2.5 rounded-lg text-slate-700 hover:bg-orange-50 hover:text-[#FF4F00] font-medium text-[14px] gap-3"
-                                >
-                                  <div className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-[#FF4F00] transition-colors shrink-0"></div>
-                                  <span className="truncate">{cat?.name || ""}</span>
-                                </button>
-                              ))
-                            ) : (
-                              <div className="px-4 py-8 text-center flex flex-col items-center">
-                                <Search className="w-8 h-8 text-slate-300 mb-2" />
-                                <p className="text-[14px] text-slate-600">No results found for "<span className="font-semibold text-slate-800">{searchQuery}</span>"</p>
-                              </div>
+                              </>
                             )}
                           </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
-            </div>
-          </form>
-        </div>
-
-        {/* Right Actions */}
-        <div className="flex items-center gap-2 md:gap-4">
-          <Link
-            href="/post-requirement"
-            className="hidden lg:flex items-center gap-1.5 text-sm font-semibold text-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-all border border-slate-200 whitespace-nowrap"
-          >
-            <ClipboardList className="w-4 h-4 text-[#164e33]" />
-            Enquiry
-          </Link>
-          <Link
-            href="/sell"
-            className="hidden lg:flex items-center gap-2 text-sm font-semibold text-slate-700 px-5 py-2.5 rounded-xl hover:bg-slate-50 transition-all border border-slate-200"
-          >
-            <Building2 className="w-4 h-4 text-[#FF4F00]" />
-            Become a Supplier
-          </Link>
-
-          {!user ? (
-            <>
-              <button
-                onClick={() => setIsBuyerDrawerOpen(true)}
-                className="hidden sm:block text-sm font-semibold text-white bg-[#164e33] px-6 py-2.5 rounded-xl hover:bg-[#113a26] transition-all"
-              >
-                Login
-              </button>
-            </>
-          ) : (
-            <div className="relative group">
-              <button
-                onClick={() => router.push('/profile')}
-                className="flex items-center gap-2 lg:bg-slate-100 p-0 lg:p-1.5 lg:pr-3 rounded-full hover:bg-slate-200 lg:hover:bg-slate-200 transition-all shrink-0 max-w-[140px] sm:max-w-none"
-              >
-                <div className="w-8 h-8 shrink-0 bg-[#164e33] rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-inner overflow-hidden border border-slate-200">
-                  {user.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt={user.name || "User"}
-                      className="w-full h-full object-contain bg-white"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.parentElement.innerText = user.name ? user.name.charAt(0) : "G";
-                      }}
-                    />
-                  ) : (
-                    user.name && user.name !== user.phone ? user.name.charAt(0) : "G"
+                      </motion.div>
+                    </>
                   )}
+                </AnimatePresence>
+              </div>
+
+              {/* Search Input Container */}
+              <div className="flex-grow relative">
+                <div className="relative z-20 flex w-full items-center bg-white border border-slate-200 rounded-lg h-[46px] hover:border-slate-300 transition-all focus-within:border-orange-500/50 pr-1.5">
+                  <input
+                    type="text"
+                    placeholder="Search products, services or suppliers..."
+                    className="flex-grow h-full bg-transparent px-4 text-[14px] font-normal text-[#111] leading-normal outline-none placeholder:text-slate-400 font-sans"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (!isSearchDropdownOpen) setIsSearchDropdownOpen(true);
+                    }}
+                    onFocus={() => {
+                      setIsSearchDropdownOpen(true);
+                      setIsLocationDropdownOpen(false);
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-[#FF4F00] hover:bg-[#E64600] text-white w-[34px] h-[34px] rounded-md transition-all flex items-center justify-center flex-shrink-0 active:scale-95"
+                  >
+                    <Search className="w-4 h-4" />
+                  </button>
                 </div>
-                <span className="text-sm font-semibold text-slate-700 hidden lg:block">
-                  {user.name && user.name !== user.phone ? user.name : "Guest User"}
-                </span>
-                <ChevronDown className="w-4 h-4 text-slate-500 transition-transform group-hover:rotate-180 hidden lg:block" />
-              </button>
 
-              {/* Dropdown Menu */}
-              <div className={`absolute right-0 top-full pt-2 w-56 z-[1000] ${forceCloseProfile ? 'hidden' : 'hidden lg:group-hover:block'}`}>
-                <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-4 py-3 border-b border-slate-50">
-                    <p className="text-xs text-slate-500 font-semibold">Signed in as</p>
-                    <p className="text-sm font-semibold text-slate-700 truncate">
-                      {user.phone}
-                    </p>
+                <AnimatePresence>
+                  {isSearchDropdownOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setIsSearchDropdownOpen(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute top-full right-0 mt-2 w-full min-w-[320px] bg-white border border-slate-300 rounded-xl shadow-2xl z-20 overflow-y-auto max-h-[450px] scrollbar-hide py-2"
+                        style={{
+                          scrollbarWidth: "none",
+                          msOverflowStyle: "none",
+                        }}
+                      >
+                        <div className="px-6 py-4 space-y-6">
+                          {/* Trending Searches - Only show if search is empty */}
+                          {!searchQuery.trim() && (
+                            <div>
+                              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest block mb-3">
+                                Trending Searches
+                              </span>
+                              <div className="flex flex-wrap gap-2">
+                                {trendingSearches.map((item, i) => (
+                                  <button
+                                    key={`trend-${i}`}
+                                    type="button"
+                                    onClick={() => handleSearch(null, item)}
+                                    className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-[13px] text-slate-600 hover:border-[#FF4F00] hover:text-[#FF4F00] transition-all"
+                                  >
+                                    {item}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Categories / Autocomplete Section */}
+                          <div>
+                            {!searchQuery.trim() && (
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest block">
+                                  All Categories
+                                </span>
+                                <span className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full">
+                                  {allCategories.length} Categories
+                                </span>
+                              </div>
+                            )}
+                            <div className={searchQuery.trim() ? "flex flex-col" : "grid grid-cols-1 gap-1"}>
+                              {isSearching && suggestions.length === 0 ? (
+                                <div className="px-4 py-8 text-center flex flex-col items-center">
+                                  <Search className="w-8 h-8 text-slate-300 mb-2 animate-pulse" />
+                                  <p className="text-[14px] text-slate-500">Searching...</p>
+                                </div>
+                              ) : searchQuery.trim() && suggestions.length > 0 ? (
+                                suggestions.map((itemName, i) => {
+                                  const matchIndex = itemName.toLowerCase().indexOf(searchQuery.trim().toLowerCase());
+                                  return (
+                                    <button
+                                      key={`sugg-${i}`}
+                                      type="button"
+                                      onClick={() => handleSearch(null, itemName, null)}
+                                      className="w-full text-left transition-all flex items-center group px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0 gap-3"
+                                    >
+                                      <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                                      {matchIndex !== -1 ? (
+                                        <span className="text-[14px] text-slate-700 truncate">
+                                          {itemName.substring(0, matchIndex)}
+                                          <span className="text-[#1a1a1a] font-semibold">
+                                            {itemName.substring(matchIndex, matchIndex + searchQuery.trim().length)}
+                                          </span>
+                                          {itemName.substring(matchIndex + searchQuery.trim().length)}
+                                        </span>
+                                      ) : (
+                                        <span className="truncate">{itemName}</span>
+                                      )}
+                                    </button>
+                                  )
+                                })
+                              ) : !searchQuery.trim() ? (
+                                allCategories.slice(0, 10).map((cat, i) => (
+                                  <button
+                                    key={`cat-${i}`}
+                                    type="button"
+                                    onClick={() => handleSearch(null, cat.name, cat.id)}
+                                    className="w-full text-left transition-all flex items-center group px-3 py-2.5 rounded-lg text-slate-700 hover:bg-orange-50 hover:text-[#FF4F00] font-medium text-[14px] gap-3"
+                                  >
+                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-[#FF4F00] transition-colors shrink-0"></div>
+                                    <span className="truncate">{cat?.name || ""}</span>
+                                  </button>
+                                ))
+                              ) : (
+                                <div className="px-4 py-8 text-center flex flex-col items-center">
+                                  <Search className="w-8 h-8 text-slate-300 mb-2" />
+                                  <p className="text-[14px] text-slate-600">No results found for "<span className="font-semibold text-slate-800">{searchQuery}</span>"</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+            </form>
+          </div>
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 md:gap-4">
+            <Link
+              href="/post-requirement"
+              className="hidden lg:flex items-center gap-1.5 text-sm font-semibold text-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-all border border-slate-200 whitespace-nowrap"
+            >
+              <ClipboardList className="w-4 h-4 text-[#164e33]" />
+              Enquiry
+            </Link>
+            <Link
+              href="/sell"
+              className="hidden lg:flex items-center gap-2 text-sm font-semibold text-slate-700 px-5 py-2.5 rounded-xl hover:bg-slate-50 transition-all border border-slate-200"
+            >
+              <Building2 className="w-4 h-4 text-[#FF4F00]" />
+              Become a Supplier
+            </Link>
+
+            {!user ? (
+              <>
+                <button
+                  onClick={() => setIsBuyerDrawerOpen(true)}
+                  className="hidden sm:block text-sm font-semibold text-white bg-[#164e33] px-6 py-2.5 rounded-xl hover:bg-[#113a26] transition-all"
+                >
+                  Login
+                </button>
+              </>
+            ) : (
+              <div className="relative group">
+                <button
+                  onClick={() => router.push('/profile')}
+                  className="flex items-center gap-2 lg:bg-slate-100 p-0 lg:p-1.5 lg:pr-3 rounded-full hover:bg-slate-200 lg:hover:bg-slate-200 transition-all shrink-0 max-w-[140px] sm:max-w-none"
+                >
+                  <div className="w-8 h-8 shrink-0 bg-[#164e33] rounded-full flex items-center justify-center text-white text-sm font-semibold shadow-inner overflow-hidden border border-slate-200">
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name || "User"}
+                        className="w-full h-full object-contain bg-white"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentElement.innerText = user.name ? user.name.charAt(0) : "G";
+                        }}
+                      />
+                    ) : (
+                      user.name && user.name !== user.phone ? user.name.charAt(0) : "G"
+                    )}
                   </div>
+                  <span className="text-sm font-semibold text-slate-700 hidden lg:block">
+                    {user.name && user.name !== user.phone ? user.name : "Guest User"}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-slate-500 transition-transform group-hover:rotate-180 hidden lg:block" />
+                </button>
 
-                  <div className="py-1">
-                    <Link href="/profile" onClick={handleProfileDropdownClick} className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#164e33] transition-colors">
-                      <User className="w-4 h-4" />
-                      My Profile
-                    </Link>
-                    <Link href="/notifications" onClick={handleProfileDropdownClick} className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#164e33] transition-colors">
-                      <Bell className="w-4 h-4" />
-                      Notifications
-                    </Link>
-                  </div>
+                {/* Dropdown Menu */}
+                <div className={`absolute right-0 top-full pt-2 w-56 z-[1000] ${forceCloseProfile ? 'hidden' : 'hidden lg:group-hover:block'}`}>
+                  <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="px-4 py-3 border-b border-slate-50">
+                      <p className="text-xs text-slate-500 font-semibold">Signed in as</p>
+                      <p className="text-sm font-semibold text-slate-700 truncate">
+                        {user.phone}
+                      </p>
+                    </div>
 
-                  <div className="border-t border-slate-50 pt-1">
-                    <button
-                      onClick={handleLogoutWithConfirm}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors font-medium"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
+                    <div className="py-1">
+                      <Link href="/profile" onClick={handleProfileDropdownClick} className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#164e33] transition-colors">
+                        <User className="w-4 h-4" />
+                        My Profile
+                      </Link>
+                      <Link href="/notifications" onClick={handleProfileDropdownClick} className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#164e33] transition-colors">
+                        <Bell className="w-4 h-4" />
+                        Notifications
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-slate-50 pt-1">
+                      <button
+                        onClick={handleLogoutWithConfirm}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors font-medium"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Mobile Menu Trigger */}
-          <div className="lg:hidden flex items-center gap-2">
-            <button
-              className="p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
-              onClick={() => window.dispatchEvent(new CustomEvent('openMobileSearch'))}
-            >
-              <Search className="w-5 h-5" />
-            </button>
-            <button
-              className="p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+            {/* Mobile Menu Trigger */}
+            <div className="lg:hidden flex items-center gap-2">
+              <button
+                className="p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+                onClick={() => window.dispatchEvent(new CustomEvent('openMobileSearch'))}
+              >
+                <Search className="w-5 h-5" />
+              </button>
+              <button
+                className="p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
       </nav>
 
       {/* Mobile Menu */}
@@ -987,12 +987,12 @@ const Navbar = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             {/* Drawer Content */}
             <div className="p-5 space-y-6 flex-1 overflow-y-auto scrollbar-none">
               {/* Mobile Search & Location Stack */}
               {/* Mobile Search Trigger */}
-              <div 
+              <div
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   window.dispatchEvent(new CustomEvent('openMobileSearch'));

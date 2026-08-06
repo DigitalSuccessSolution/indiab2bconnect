@@ -41,6 +41,9 @@ export default function AdminProfile() {
    const [timer, setTimer] = useState(0);
    const [canResend, setCanResend] = useState(false);
 
+   const [toggling2fa, setToggling2fa] = useState(false);
+   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+
    useEffect(() => {
       if (user) {
          setFormData({
@@ -48,6 +51,7 @@ export default function AdminProfile() {
             phone: user.phone || '',
             password: ''
          });
+         setTwoFactorEnabled(user.twoFactorEnabled || false);
          setLoading(false);
       }
    }, [user]);
@@ -186,6 +190,34 @@ export default function AdminProfile() {
       }
    };
 
+   const handleToggle2FA = async () => {
+      setToggling2fa(true);
+      try {
+         const data = await apiFetch('/auth/toggle-2fa', {
+            method: 'PATCH',
+            body: JSON.stringify({ enable: !twoFactorEnabled })
+         });
+         setTwoFactorEnabled(data.data.twoFactorEnabled);
+         Swal.fire({
+            icon: 'success',
+            title: data.data.twoFactorEnabled ? '2FA Enabled' : '2FA Disabled',
+            text: `Two-Factor Authentication is now ${data.data.twoFactorEnabled ? 'enabled' : 'disabled'} for your account.`,
+            timer: 3000,
+            showConfirmButton: false
+         });
+         await refreshUser();
+      } catch (error: any) {
+         console.error('Failed to toggle 2FA:', error);
+         Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Failed to update 2FA settings: ' + error.message,
+         });
+      } finally {
+         setToggling2fa(false);
+      }
+   };
+
    if (authLoading || loading) {
       return (
          <div className="flex justify-center items-center h-64">
@@ -302,20 +334,43 @@ export default function AdminProfile() {
                <hr className="border-gray-100 my-8" />
 
                {/* Security Section */}
-               <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                     <Lock className="w-5 h-5 text-[#164e33]" />
-                     Update Password
-                  </h3>
-                  <div className="max-w-md space-y-2">
-                     <label className="text-sm font-medium text-slate-700">New Password (optional)</label>
-                     <input
-                        type="password"
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#164e33] focus:border-[#164e33] outline-none transition-all"
-                        placeholder="Leave blank to keep current"
-                     />
+               <div className="space-y-8">
+                  <div>
+                     <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <Lock className="w-5 h-5 text-[#164e33]" />
+                        Update Password
+                     </h3>
+                     <div className="max-w-md space-y-2">
+                        <label className="text-sm font-medium text-slate-700">New Password (optional)</label>
+                        <input
+                           type="password"
+                           value={formData.password}
+                           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                           className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#164e33] focus:border-[#164e33] outline-none transition-all"
+                           placeholder="Leave blank to keep current"
+                        />
+                     </div>
+                  </div>
+
+                  <div>
+                     <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <Shield className="w-5 h-5 text-[#164e33]" />
+                        Two-Factor Authentication (2FA)
+                     </h3>
+                     <div className="flex items-center justify-between max-w-md p-4 rounded-xl border border-gray-200 bg-gray-50">
+                        <div>
+                           <p className="text-sm font-medium text-gray-900">Enable 2FA</p>
+                           <p className="text-xs text-gray-500 mt-1">Add an extra layer of security to your account.</p>
+                        </div>
+                        <button
+                           type="button"
+                           onClick={handleToggle2FA}
+                           disabled={toggling2fa}
+                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#164e33] focus:ring-offset-2 ${twoFactorEnabled ? 'bg-[#164e33]' : 'bg-gray-300'}`}
+                        >
+                           <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                        </button>
+                     </div>
                   </div>
                </div>
 

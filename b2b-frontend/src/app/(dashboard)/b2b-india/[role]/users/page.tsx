@@ -44,7 +44,7 @@ export default function AdminUsers() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [counts, setCounts] = useState({ vendors: 0, admins: 0, newMembers: 0 });
-  const pageSize = 50;
+  const [pageSize, setPageSize] = useState("10");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -52,7 +52,7 @@ export default function AdminUsers() {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, roleFilter, statusFilter]);
+  }, [searchTerm, roleFilter, statusFilter, pageSize]);
 
   const fetchUsers = async (page = 1) => {
     try {
@@ -259,10 +259,10 @@ export default function AdminUsers() {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.role === "SUPERADMIN" ? "bg-indigo-100 text-indigo-800"
-                            : user.role === "ADMIN" ? "bg-purple-100 text-purple-800"
-                              : user.role === "SUBADMIN" ? "bg-cyan-100 text-cyan-800"
-                                : user.role === "VENDOR" ? "bg-green-100 text-green-800"
-                                  : "bg-gray-100 text-gray-800"
+                          : user.role === "ADMIN" ? "bg-purple-100 text-purple-800"
+                            : user.role === "SUBADMIN" ? "bg-cyan-100 text-cyan-800"
+                              : user.role === "VENDOR" ? "bg-green-100 text-green-800"
+                                : "bg-gray-100 text-gray-800"
                           }`}>
                           {user.role}
                         </span>
@@ -322,17 +322,35 @@ export default function AdminUsers() {
 
           {/* Pagination */}
           <div className="px-6 py-3 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50">
-            <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">{(currentPage - 1) * pageSize + 1}</span> to <span className="font-medium">{Math.min(currentPage * pageSize, totalCount)}</span> of <span className="font-medium">{totalCount}</span> results
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-700">Rows per page:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="bg-white border border-gray-300 rounded-md text-sm text-gray-700 px-2 py-1 outline-none cursor-pointer"
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+              <p className="text-sm text-gray-700">
+                Showing <span className="font-medium">{totalCount === 0 ? 0 : (currentPage - 1) * Number(pageSize) + 1}</span> to <span className="font-medium">{Math.min(currentPage * Number(pageSize), totalCount)}</span> of <span className="font-medium">{totalCount}</span> results
+              </p>
+            </div>
 
             <div className="flex items-center gap-1">
               <button
                 onClick={() => currentPage > 1 && fetchUsers(currentPage - 1)}
                 disabled={currentPage === 1 || loading}
-                className="p-1.5 border border-gray-300 rounded-md bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
-                <ChevronRight className="w-5 h-5 rotate-180" />
+                Previous
               </button>
 
               <div className="flex items-center gap-1">
@@ -344,8 +362,8 @@ export default function AdminUsers() {
                         key={pageNum}
                         onClick={() => fetchUsers(pageNum)}
                         className={`w-8 h-8 rounded-md text-sm font-medium ${currentPage === pageNum
-                            ? "bg-[#164e33] text-white border border-[#164e33]"
-                            : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                          ? "bg-[#164e33] text-white border border-[#164e33]"
+                          : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                           }`}
                       >
                         {pageNum}
@@ -361,9 +379,9 @@ export default function AdminUsers() {
               <button
                 onClick={() => currentPage < totalPages && fetchUsers(currentPage + 1)}
                 disabled={currentPage === totalPages || loading}
-                className="p-1.5 border border-gray-300 rounded-md bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
-                <ChevronRight className="w-5 h-5" />
+                Next
               </button>
             </div>
           </div>

@@ -17,6 +17,7 @@ interface User {
   admin?: any;
   phoneVerified?: boolean;
   emailVerified?: boolean;
+  twoFactorEnabled?: boolean;
 }
 
 

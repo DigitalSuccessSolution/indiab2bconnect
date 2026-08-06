@@ -44,6 +44,10 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [mfaStep, setMfaStep] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [mfaUserId, setMfaUserId] = useState("");
+  const [mfaEmail, setMfaEmail] = useState("");
   const { user, login } = useAuth();
   const router = useRouter();
 
@@ -65,9 +69,18 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
+      if (data?.data?.mfaRequired) {
+        setMfaUserId(data.data.userId);
+        setMfaEmail(data.data.email);
+        setMfaStep(true);
+        setPassword("");
+        setLoading(false);
+        return;
+      }
+
       const user = data.data.user;
 
-      if (!['SUPERADMIN', 'ADMIN', 'SUBADMIN'].includes(user.role)) {
+      if (!user || !['SUPERADMIN', 'ADMIN', 'SUBADMIN'].includes(user.role)) {
         setError("UNAUTHORIZED ACCESS. Administrative personnel only.");
         setLoading(false);
         return;
@@ -76,6 +89,35 @@ export default function AdminLoginPage() {
       login(data.data.token, user, false);
     } catch (err: any) {
       setError(err.message || "Invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMfaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp || otp.length !== 6) {
+      setError("Please enter the 6-digit OTP");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const data = await apiFetch("/auth/verify-2fa", {
+        method: "POST",
+        body: JSON.stringify({ userId: mfaUserId, otp }),
+      });
+      if (data?.data?.token) {
+        const user = data.data.user;
+        if (!user || !['SUPERADMIN', 'ADMIN', 'SUBADMIN'].includes(user.role)) {
+          setError("UNAUTHORIZED ACCESS. Administrative personnel only.");
+          setLoading(false);
+          return;
+        }
+        login(data.data.token, user, false);
+      }
+    } catch (err: any) {
+      setError(err.message || "Invalid OTP. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -95,8 +137,9 @@ export default function AdminLoginPage() {
 
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.1),0_10px_20px_rgba(0,0,0,0.02)] border border-gray-200 p-8 sm:p-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
+          {!mfaStep ? (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
               <motion.div
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -163,6 +206,63 @@ export default function AdminLoginPage() {
               )}
             </button>
           </form>
+          ) : (
+            <form onSubmit={handleMfaSubmit} className="space-y-6">
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 bg-red-50 text-red-600 text-sm font-semibold border border-red-100 rounded-lg flex items-center gap-2"
+                >
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {error}
+                </motion.div>
+              )}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 ml-1">Authentication Code</label>
+                <div className="relative group">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400 group-focus-within:text-gray-900 transition-colors" />
+                  <input
+                    type="text"
+                    required
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    maxLength={6}
+                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-300 rounded-xl outline-none focus:border-gray-900 focus:ring-4 focus:ring-gray-900/5 text-gray-900 transition-all placeholder:text-gray-400 text-sm font-medium tracking-[0.5em]"
+                    placeholder="000000"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-2 ml-1">Enter the 6-digit code sent to {mfaEmail}</p>
+              </div>
+              
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    <span>Verify & Login</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setMfaStep(false);
+                  setOtp("");
+                  setError("");
+                }}
+                className="w-full py-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Back to Login
+              </button>
+            </form>
+          )}
         </div>
 
         {/* Footer Navigation */}

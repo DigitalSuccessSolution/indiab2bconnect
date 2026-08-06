@@ -33,6 +33,7 @@ export default function AdminInquiries() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [pageSize, setPageSize] = useState("10");
 
   // Modal State
   const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
@@ -40,16 +41,16 @@ export default function AdminInquiries() {
 
   useEffect(() => {
     fetchInquiries(currentPage);
-  }, [statusFilter, currentPage]);
+  }, [statusFilter, currentPage, pageSize]);
 
   const fetchInquiries = async (page = 1) => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: "20"
+        limit: pageSize
       });
-      
+
       if (statusFilter !== "ALL") {
         params.append("status", statusFilter);
       }
@@ -131,11 +132,11 @@ export default function AdminInquiries() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "PENDING":
-        return <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium flex items-center gap-1 w-max"><Clock size={12}/> Pending</span>;
+        return <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium flex items-center gap-1 w-max"><Clock size={12} /> Pending</span>;
       case "INPROGRESS":
-        return <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium flex items-center gap-1 w-max"><AlertCircle size={12}/> In Progress</span>;
+        return <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium flex items-center gap-1 w-max"><AlertCircle size={12} /> In Progress</span>;
       case "RESOLVED":
-        return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1 w-max"><CheckCircle2 size={12}/> Resolved</span>;
+        return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium flex items-center gap-1 w-max"><CheckCircle2 size={12} /> Resolved</span>;
       default:
         return <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">{status}</span>;
     }
@@ -151,7 +152,7 @@ export default function AdminInquiries() {
 
   const renderPaginationButtons = () => {
     if (totalPages <= 0) return null;
-    
+
     const buttons = [];
     const maxVisiblePages = 5;
 
@@ -168,10 +169,9 @@ export default function AdminInquiries() {
         key="prev"
         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
         disabled={currentPage === 1}
-        className="px-2.5 py-1.5 text-sm font-medium text-slate-500 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="px-3 py-1.5 border border-slate-300 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 text-slate-700 transition-colors"
       >
-        <span className="sr-only">Previous</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+        Previous
       </button>
     );
 
@@ -214,10 +214,9 @@ export default function AdminInquiries() {
         key="next"
         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
         disabled={currentPage === totalPages}
-        className="px-2.5 py-1.5 text-sm font-medium text-slate-500 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="px-3 py-1.5 border border-slate-300 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 text-slate-700 transition-colors"
       >
-        <span className="sr-only">Next</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        Next
       </button>
     );
 
@@ -323,7 +322,7 @@ export default function AdminInquiries() {
                     className="hover:bg-slate-50/50 transition-colors"
                   >
                     <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">
-                      {new Date(inq.createdAt).toLocaleDateString()}<br/>
+                      {new Date(inq.createdAt).toLocaleDateString()}<br />
                       <span className="text-xs text-slate-400">{new Date(inq.createdAt).toLocaleTimeString()}</span>
                     </td>
                     <td className="px-6 py-4">
@@ -375,7 +374,23 @@ export default function AdminInquiries() {
         {totalPages > 0 && (
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-b-xl">
             <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-              <div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-700">Rows per page:</span>
+                  <select
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="bg-white border border-gray-300 rounded-md text-sm text-gray-700 px-2 py-1 outline-none cursor-pointer"
+                  >
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
                 <p className="text-sm text-gray-700">
                   Showing page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
                 </p>

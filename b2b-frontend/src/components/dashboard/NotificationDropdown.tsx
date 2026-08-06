@@ -152,13 +152,13 @@ export default function NotificationDropdown() {
                                                 <h4 className="text-sm font-semibold text-slate-900">{n.title}</h4>
                                                 <div className="flex items-center gap-1.5 text-slate-700">
                                                     <Clock className="w-3 h-3" />
-                                                    <span className="text-sm font-medium">{new Date(n.createdAt).toLocaleDateString()}</span>
+                                                    <span className="text-sm font-medium">{new Date(n.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                                                 </div>
                                             </div>
                                             <p className="text-sm text-slate-700 font-medium leading-relaxed">{n.message}</p>
                                         </div>
                                         {!n.isRead && (
-                                            <div className="w-2 h-2 bg-[#164e33] rounded-full mt-1.5 shrink-0"></div>
+                                            <div className="w-2 h-2 bg-[#164e33] rounded-full mt-1.5 shrink-0 mr-2"></div>
                                         )}
                                     </div>
                                 ))
@@ -183,7 +183,7 @@ export default function NotificationDropdown() {
                                 onClick={() => setIsOpen(false)}
                                 className="text-sm font-semibold text-slate-700 hover:text-[#164e33] transition-colors uppercase  flex items-center justify-center gap-2"
                             >
-                                View all notification vault
+                                View all notifications
                             </Link>
                         </div>
                     </motion.div>

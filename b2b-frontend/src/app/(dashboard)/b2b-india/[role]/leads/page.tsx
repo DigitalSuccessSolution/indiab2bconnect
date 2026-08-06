@@ -18,7 +18,7 @@ import Swal from "sweetalert2";
 
 export default function SuperAdminLeads() {
   const { hasPermission } = useAuth();
-  
+
   const canUpdate = hasPermission('leads_update');
   const canReassign = hasPermission('leads_reassign');
   const hasActions = canUpdate || canReassign;
@@ -30,11 +30,12 @@ export default function SuperAdminLeads() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [timeRange, setTimeRange] = useState("ALL");
-  
+
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
-  
+  const [limit, setLimit] = useState(10);
+
   const [assigning, setAssigning] = useState<string | null>(null);
   const [categoryVendors, setCategoryVendors] = useState<any[]>([]);
   const [vendorsLoading, setVendorsLoading] = useState(false);
@@ -48,7 +49,7 @@ export default function SuperAdminLeads() {
       fetchLeads();
     }, 300);
     return () => clearTimeout(delayDebounce);
-  }, [timeRange, page, statusFilter, searchTerm]);
+  }, [timeRange, page, statusFilter, searchTerm, limit]);
 
   useEffect(() => {
     if (selectedLead?.categoryId) {
@@ -98,7 +99,7 @@ export default function SuperAdminLeads() {
       if (statusFilter !== "ALL") params.append("status", statusFilter);
       if (searchTerm) params.append("search", searchTerm);
       params.append("page", page.toString());
-      params.append("limit", "20");
+      params.append("limit", limit.toString());
       const data = await apiFetch("/admin/leads?" + params.toString());
       const fetchedLeads = data.data?.leads || [];
       setLeads(fetchedLeads);
@@ -238,8 +239,8 @@ export default function SuperAdminLeads() {
                 ))
               ) : filteredLeads.length > 0 ? (
                 filteredLeads.map((lead) => (
-                  <tr 
-                    key={lead.id} 
+                  <tr
+                    key={lead.id}
                     className="hover:bg-gray-50 transition-colors cursor-pointer"
                     onClick={() => {
                       setSelectedLead(lead);
@@ -272,15 +273,14 @@ export default function SuperAdminLeads() {
                       {(() => {
                         const effectiveStatus = (lead.status === "DISTRIBUTED" && !lead.vendor) ? "PENDING" : lead.status;
                         return (
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            effectiveStatus === "PENDING"
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${effectiveStatus === "PENDING"
                               ? "bg-yellow-100 text-yellow-800"
                               : effectiveStatus === "DISTRIBUTED"
                                 ? "bg-blue-100 text-blue-800"
                                 : effectiveStatus === "EXPIRED"
                                   ? "bg-red-100 text-red-800"
                                   : "bg-green-100 text-green-800"
-                          }`}>
+                            }`}>
                             {effectiveStatus === "PENDING" ? "Pending" : effectiveStatus === "DISTRIBUTED" ? "Assigned" : effectiveStatus === "EXPIRED" ? "Expired" : "Completed"}
                           </span>
                         );
@@ -326,50 +326,67 @@ export default function SuperAdminLeads() {
 
         {/* Pagination Controls */}
         <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-gray-200">
-          <span className="text-sm text-[#344054]">
-          Showing {totalLeads === 0 ? 0 : (page - 1) * 20 + 1} to {Math.min(page * 20, totalLeads)} of {totalLeads} results
-        </span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
-          >
-            <ChevronLeft size={16} />
-          </button>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-[#344054]">Rows per page:</span>
+              <select
+                value={limit}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="bg-white border border-gray-300 rounded-md text-sm text-gray-700 px-2 py-1 outline-none cursor-pointer"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+            <span className="text-sm text-[#344054]">
+              Showing {totalLeads === 0 ? 0 : (page - 1) * limit + 1} to {Math.min(page * limit, totalLeads)} of {totalLeads} results
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
+            >
+              Previous
+            </button>
 
-          <div className="flex items-center gap-1">
-            {[...Array(totalPages || 1)].map((_, idx) => {
-              const p = idx + 1;
-              if (totalPages > 5 && p !== 1 && p !== totalPages && Math.abs(page - p) > 1) {
+            <div className="flex items-center gap-1">
+              {[...Array(totalPages || 1)].map((_, idx) => {
+                const p = idx + 1;
+                if (totalPages > 5 && p !== 1 && p !== totalPages && Math.abs(page - p) > 1) {
                   if (p === 2 || p === totalPages - 1) return <span key={p} className="px-1 text-gray-400">...</span>;
                   return null;
-              }
-              return (
-                <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
-                    page === p
-                      ? "bg-[#164e33] text-white border border-[#164e33]"
-                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {p}
-                </button>
-              );
-            })}
-          </div>
+                }
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${page === p
+                        ? "bg-[#164e33] text-white border border-[#164e33]"
+                        : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+            </div>
 
-          <button
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages || totalPages === 0}
-            className="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
-          >
-            <ChevronRight size={16} />
-          </button>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages || totalPages === 0}
+              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
+            >
+              Next
+            </button>
+          </div>
         </div>
-      </div>
       </div>
 
       {/* Detail Slide-over Panel */}
@@ -377,7 +394,7 @@ export default function SuperAdminLeads() {
         <div className="fixed inset-0 z-50 overflow-hidden">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity" onClick={() => setIsDetailOpen(false)} />
           <div className="absolute inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl flex flex-col">
-            
+
             {/* Panel Header */}
             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
               <h2 className="text-lg font-bold text-gray-900">Lead Details</h2>
@@ -391,7 +408,7 @@ export default function SuperAdminLeads() {
 
             {/* Panel Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
-              
+
               {/* Lead Info */}
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                 <h3 className="text-base font-medium text-gray-900 mb-1">
@@ -426,7 +443,7 @@ export default function SuperAdminLeads() {
                       {vendorsLoading ? "..." : `${categoryVendors.length} Available`}
                     </span>
                   </div>
-                  
+
                   <div className="space-y-2">
                     {vendorsLoading ? (
                       <div className="text-sm text-gray-500 py-4 text-center">Loading vendors...</div>
@@ -446,13 +463,12 @@ export default function SuperAdminLeads() {
                           <button
                             onClick={() => handleAssign(selectedLead.id, vendor.id)}
                             disabled={assigning === vendor.id || !!selectedLead.vendor}
-                            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-                              selectedLead.vendor?.id === vendor.id 
-                                ? "bg-green-50 text-green-700 border border-green-200 cursor-default" 
+                            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${selectedLead.vendor?.id === vendor.id
+                                ? "bg-green-50 text-green-700 border border-green-200 cursor-default"
                                 : !!selectedLead.vendor
-                                ? "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
-                                : "bg-[#164e33] hover:bg-[#113f29] text-white"
-                            }`}
+                                  ? "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
+                                  : "bg-[#164e33] hover:bg-[#113f29] text-white"
+                              }`}
                           >
                             {assigning === vendor.id ? "Assigning..." : selectedLead.vendor?.id === vendor.id ? "Assigned" : "Assign"}
                           </button>

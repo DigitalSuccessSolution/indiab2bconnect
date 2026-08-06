@@ -84,6 +84,7 @@ export default function AdminNotifications() {
         showConfirmButton: false
       });
       setFormData({ title: '', message: '', type: 'INFO', target: 'ALL' });
+      setActiveTab('ALERTS');
     } catch (error: any) {
       Swal.fire({
         icon: 'error',

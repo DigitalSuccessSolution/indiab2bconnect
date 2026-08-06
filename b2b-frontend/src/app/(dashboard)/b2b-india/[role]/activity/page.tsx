@@ -290,40 +290,67 @@ export default function AdminActivityLogs() {
 
           {/* --- PAGINATION FOOTER --- */}
           {!loading && logs.length > 0 && (
-            <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-sm text-gray-600">
-                  Showing <span className="font-medium text-gray-900">{((page - 1) * limit) + 1}</span> to <span className="font-medium text-gray-900">{Math.min(page * limit, total)}</span> of <span className="font-medium text-gray-900">{total}</span> entries
-                </p>
-
-                <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50 gap-4 sm:gap-0">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Rows per page:</span>
                   <select 
                     value={limit}
                     onChange={(e) => { setLimit(parseInt(e.target.value)); setPage(1); }}
-                    className="bg-white border border-gray-200 rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 outline-none focus:border-gray-300"
+                    className="bg-white border border-gray-300 rounded-md text-sm text-gray-700 px-2 py-1 outline-none cursor-pointer"
                   >
-                      <option value={10}>10 per page</option>
-                      <option value={25}>25 per page</option>
-                      <option value={50}>50 per page</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
                   </select>
-
-                  <div className="flex items-center gap-1">
-                      <button 
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        className="p-1.5 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-colors"
-                      >
-                        <ChevronLeft size={18} />
-                      </button>
-                      <span className="text-sm font-medium text-gray-700 px-3">Page {page}</span>
-                      <button 
-                        onClick={() => setPage(p => Math.min(Math.ceil(total / limit), p + 1))}
-                        disabled={page >= Math.ceil(total / limit)}
-                        className="p-1.5 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-colors"
-                      >
-                        <ChevronRight size={18} />
-                      </button>
-                  </div>
                 </div>
+                <span className="text-sm text-gray-600">
+                  Showing <span className="font-medium text-gray-900">{total === 0 ? 0 : ((page - 1) * limit) + 1}</span> to <span className="font-medium text-gray-900">{Math.min(page * limit, total)}</span> of <span className="font-medium text-gray-900">{total}</span> results
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                  <button 
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <div className="flex items-center gap-1">
+                    {(() => {
+                      const totalPages = Math.ceil(total / limit) || 1;
+                      return [...Array(totalPages)].map((_, idx) => {
+                        const p = idx + 1;
+                        if (totalPages > 5 && p !== 1 && p !== totalPages && Math.abs(page - p) > 1) {
+                          if (p === 2 || p === totalPages - 1) return <span key={p} className="px-1 text-gray-400">...</span>;
+                          return null;
+                        }
+                        return (
+                          <button
+                            key={p}
+                            onClick={() => setPage(p)}
+                            className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+                              page === p
+                                ? "bg-[#164e33] text-white border border-[#164e33]"
+                                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        );
+                      });
+                    })()}
+                  </div>
+                  <button 
+                    onClick={() => setPage(p => Math.min(Math.ceil(total / limit) || 1, p + 1))}
+                    disabled={page >= Math.ceil(total / limit)}
+                    className="px-3 py-1.5 rounded-md border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                  >
+                    Next
+                  </button>
+              </div>
             </div>
           )}
       </div>

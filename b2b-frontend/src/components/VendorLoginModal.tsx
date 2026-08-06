@@ -88,10 +88,17 @@ export default function VendorLoginModal({
     setLoading(true);
     setError("");
     try {
-      await apiFetch("/auth/request-otp", {
+      const response = await apiFetch("/auth/request-otp", {
         method: "POST",
         body: JSON.stringify({ phone }),
       });
+      
+      // Show OTP in an alert for testing purposes
+      const otpCode = response?.data?.otp || response?.otp;
+      if (otpCode) {
+        alert(`Test OTP: ${otpCode}`);
+      }
+      
       setOtpSent(true);
     } catch (err: any) {
       setError(err.message || "Failed to request OTP");

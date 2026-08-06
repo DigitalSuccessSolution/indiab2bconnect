@@ -39,6 +39,7 @@ export default function OfferingApprovals() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalEntries, setTotalEntries] = useState(0);
+  const [limit, setLimit] = useState(10);
 
   const [selectedOffering, setSelectedOffering] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -59,7 +60,7 @@ export default function OfferingApprovals() {
       fetchOfferings();
     }, 300);
     return () => clearTimeout(delayDebounce);
-  }, [timeRange, statusFilter, typeFilter, searchTerm, page]);
+  }, [timeRange, statusFilter, typeFilter, searchTerm, page, limit]);
 
   const fetchOfferings = async () => {
     try {
@@ -71,7 +72,7 @@ export default function OfferingApprovals() {
       if (timeRange !== "ALL") params.append("timeRange", timeRange);
       
       params.append("page", page.toString());
-      params.append("limit", "20");
+      params.append("limit", limit.toString());
 
       const data = await apiFetch(`/admin/offerings?${params.toString()}`);
       const fetchedOfferings = data.data?.offerings || [];
@@ -269,7 +270,7 @@ export default function OfferingApprovals() {
       <div className="space-y-4 md:space-y-6">
         {/* Header Section */}
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-900 tracking-tight">Offering Approvals</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-900 tracking-tight">Products/Services Approvals</h1>
           <p className="text-gray-500 text-sm mt-1">Review and manage products and services listed by vendors.</p>
         </div>
 
@@ -463,16 +464,34 @@ export default function OfferingApprovals() {
 
           {/* Pagination Controls */}
           <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-gray-200">
-            <span className="text-sm text-[#344054]">
-              Showing {totalEntries === 0 ? 0 : (page - 1) * 20 + 1} to {Math.min(page * 20, totalEntries)} of {totalEntries} results
-            </span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-[#344054]">Rows per page:</span>
+                <select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className="bg-white border border-gray-300 rounded-md text-sm text-gray-700 px-2 py-1 outline-none cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+              <span className="text-sm text-[#344054]">
+                Showing {totalEntries === 0 ? 0 : (page - 1) * limit + 1} to {Math.min(page * limit, totalEntries)} of {totalEntries} results
+              </span>
+            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
               >
-                <ChevronLeft size={16} />
+                Previous
               </button>
 
               <div className="flex items-center gap-1">
@@ -501,9 +520,9 @@ export default function OfferingApprovals() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages || totalPages === 0}
-                className="w-9 h-9 flex items-center justify-center border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
               >
-                <ChevronRight size={16} />
+                Next
               </button>
             </div>
           </div>

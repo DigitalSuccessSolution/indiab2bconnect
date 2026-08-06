@@ -91,6 +91,12 @@ export default function VendorLogin({
       }
 
       if (data?.data?.token) {
+        if (['ADMIN', 'SUBADMIN', 'SUPERADMIN'].includes(data.data.user?.role)) {
+          setError("Admins are not permitted to login via the Vendor Portal.");
+          setLoading(false);
+          return;
+        }
+
         login(data.data.token, data.data.user, false);
         // Reset state
         setEmail("");
@@ -254,6 +260,12 @@ export default function VendorLogin({
                       body: JSON.stringify({ userId: mfaUserId, otp }),
                     });
                     if (data?.data?.token) {
+                      if (['ADMIN', 'SUBADMIN', 'SUPERADMIN'].includes(data.data.user?.role)) {
+                        setError("Admins are not permitted to login via the Vendor Portal.");
+                        setLoading(false);
+                        return;
+                      }
+
                       login(data.data.token, data.data.user, false);
                       setEmail("");
                       setPassword("");

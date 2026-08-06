@@ -106,12 +106,36 @@ export default function DashboardLayout({
       const isAdminOrSub = ["ADMIN", "SUBADMIN"].includes(user.role);
       if (isB2bIndiaPath && isAdminOrSub && user.role !== "SUPERADMIN") {
         const prefix = `/b2b-india/${rolePathMap[user.role]}`;
-        if (path.startsWith(`${prefix}/leads`) && !hasPermission("leads_read")) router.push(`${prefix}/dashboard`);
-        if (path.startsWith(`${prefix}/vendors`) && !hasPermission("vendors_read")) router.push(`${prefix}/dashboard`);
-        if (path.startsWith(`${prefix}/products`) && !hasPermission("products_read")) router.push(`${prefix}/dashboard`);
-        if (path.startsWith(`${prefix}/users`) && !hasPermission("users_read")) router.push(`${prefix}/dashboard`);
-        if (path.startsWith(`${prefix}/categories`) && !hasPermission("categories_read")) router.push(`${prefix}/dashboard`);
-        if (path.startsWith(`${prefix}/admins`) && !hasPermission("admins_read")) router.push(`${prefix}/dashboard`);
+        
+        // Define route-to-permission mapping based on Sidebar
+        const routePermissions: Record<string, string> = {
+          "/dashboard": "dashboard_read",
+          "/analytics": "analytics_read",
+          "/activity": "activity_read",
+          "/vendor-approvals": "vendors_read",
+          "/offering-approvals": "products_read",
+          "/leads": "leads_read",
+          "/users": "users_read",
+          "/inquiries": "inquiries_read",
+          "/categories": "categories_read",
+          "/packages": "packages_read",
+          "/admins": "admins_read",
+          "/transactions": "transactions_read",
+          "/settings": "settings_read",
+        };
+
+        // Check if current path requires a permission
+        for (const [routePattern, permission] of Object.entries(routePermissions)) {
+          if (path.startsWith(`${prefix}${routePattern}`) && !hasPermission(permission)) {
+            // Fallback routing if they don't even have dashboard permission
+            if (routePattern === "/dashboard") {
+              router.push(`${prefix}/profile`);
+            } else {
+              router.push(`${prefix}/dashboard`);
+            }
+            return;
+          }
+        }
       }
     }
   }, [user, loading, router, pathname]);
@@ -187,6 +211,7 @@ export default function DashboardLayout({
       case 'inquiries': return "Contact Inquiries";
       case 'users': return "Users Management";
       case 'leads': return "Leads Management";
+      case 'offering-approvals': return "Products/Services Approvals";
       case 'settings': return "Settings";
       case 'categories': return "Categories";
       case 'profile': return "My Profile";
@@ -326,7 +351,7 @@ export default function DashboardLayout({
                       text: "Are you sure you want to logout?",
                       icon: 'warning',
                       showCancelButton: true,
-                      confirmButtonColor: '#ef530f',
+                      confirmButtonColor: '#164e33',
                       cancelButtonColor: '#94a3b8',
                       confirmButtonText: 'Yes, logout!'
                     }).then((result) => {

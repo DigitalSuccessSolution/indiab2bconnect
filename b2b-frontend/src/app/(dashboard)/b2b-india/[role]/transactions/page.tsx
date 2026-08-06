@@ -28,6 +28,7 @@ export default function AdminTransactions() {
   const [timeRange, setTimeRange] = useState('ALL');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [stats, setStats] = useState({ totalRev: 0, pending: 0, count: 0 });
 
   // Debounce search input
@@ -41,12 +42,12 @@ export default function AdminTransactions() {
 
   useEffect(() => {
     fetchTransactions();
-  }, [statusFilter, timeRange, debouncedSearch, page]);
+  }, [statusFilter, timeRange, debouncedSearch, page, limit]);
 
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      let url = `/admin/transactions?page=${page}&limit=10`;
+      let url = `/admin/transactions?page=${page}&limit=${limit}`;
       if (statusFilter !== 'ALL') url += `&status=${statusFilter}`;
       if (timeRange !== 'ALL') url += `&timeRange=${timeRange}`;
       if (debouncedSearch) url += `&search=${encodeURIComponent(debouncedSearch)}`;
@@ -99,10 +100,9 @@ export default function AdminTransactions() {
         key="prev"
         onClick={() => setPage(p => Math.max(1, p - 1))}
         disabled={page === 1}
-        className="px-2.5 py-1.5 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
       >
-        <span className="sr-only">Previous</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+        Previous
       </button>
     );
 
@@ -145,10 +145,9 @@ export default function AdminTransactions() {
         key="next"
         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
         disabled={page === totalPages}
-        className="px-2.5 py-1.5 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-gray-700 transition-colors"
       >
-        <span className="sr-only">Next</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        Next
       </button>
     );
 
@@ -335,11 +334,29 @@ export default function AdminTransactions() {
         </div>
         
         {/* Pagination Controls */}
-        {!loading && totalPages > 1 && (
+        {!loading && totalPages > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50 gap-4 sm:gap-0">
-            <span className="text-sm text-gray-600">
-              Showing <span className="font-medium text-gray-900">{(page - 1) * 10 + 1}</span> to <span className="font-medium text-gray-900">{Math.min(page * 10, stats.count)}</span> of <span className="font-medium text-gray-900">{stats.count}</span> results
-            </span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">Rows per page:</span>
+                <select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className="bg-white border border-gray-300 rounded-md text-sm text-gray-700 px-2 py-1 outline-none cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+              <span className="text-sm text-gray-600">
+                Showing <span className="font-medium text-gray-900">{stats.count === 0 ? 0 : (page - 1) * limit + 1}</span> to <span className="font-medium text-gray-900">{Math.min(page * limit, stats.count)}</span> of <span className="font-medium text-gray-900">{stats.count}</span> results
+              </span>
+            </div>
             <div className="flex items-center gap-1.5">
               {renderPaginationButtons()}
             </div>
